@@ -1,7 +1,7 @@
 import os
 import sys
 from argparse import ArgumentParser
-import LineTransmitter
+from LineTransmitter import LineTransmitter
 
 from flask import Flask, request, abort
 from linebot.v3 import (
