@@ -18,7 +18,7 @@ def line_transmitter(in_string):
                     if v == tile[0]:
                         return tile[1] + k
         
-        current = "萬"
+        current = "m"
         print(in_string)
         for chr in in_string:
             if not chr.isnumeric() or chr == "萬":
