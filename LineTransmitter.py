@@ -40,7 +40,7 @@ def line_transmitter(in_string):
 
         return ret
     except:
-        return "請用下面範例的格式告訴我你的牌唷！\n 筒、條、萬：直接輸入數字\n 中、發、白、風：輸入張數 \nex:\n筒1112345678999 條 萬 中3 發 白 東 南 西 北 "
+        return "請用下面範例的格式告訴我你的牌唷！\n 筒、條、萬：直接輸入數字\n 中、發、白、風：輸入張數 \n範例1:\n筒1112345678999 條 萬 中3 發 白 東 南 西 北 \n範例2:\n筒5551234"
             
 
 def get_listen_tiles(holdings):
