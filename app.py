@@ -67,7 +67,7 @@ def message_text(event):
         line_bot_api.reply_message_with_http_info(
             ReplyMessageRequest(
                 reply_token=event.reply_token,
-                messages=ret
+                messages=[TextMessage(text=ret)]
             )
         )
 
