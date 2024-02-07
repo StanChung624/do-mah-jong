@@ -1,7 +1,7 @@
 import os
 import sys
 from argparse import ArgumentParser
-from LineTransmitter import LineTransmitter
+from LineTransmitter import line_transmitter
 
 from flask import Flask, request, abort
 from linebot.v3 import (
@@ -63,7 +63,7 @@ def callback():
 def message_text(event):
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
-        ret = LineTransmitter(event.message.text)
+        ret = line_transmitter(event.message.text)
         line_bot_api.reply_message_with_http_info(
             ReplyMessageRequest(
                 reply_token=event.reply_token,
