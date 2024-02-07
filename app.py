@@ -1,3 +1,5 @@
+import os
+import sys
 from flask import Flask, request, abort
 
 from linebot import (
@@ -10,10 +12,9 @@ from linebot.models import *
 
 app = Flask(__name__)
 
-# Channel Access Token
-line_bot_api = LineBotApi('jJ2rXHY6oCZSo4WxQmgNUwHjL5HjkrjVgEnQhBLwaTqbiZ4uaQFozuq6XInoX3iof0JDZcYxpwQNun9HO6Kp9p/zPE1RotEpblTB1J+Q/YVYafS/y0jn1BCAgY3yugzdqSyvSdYlLPOCN/ZElwwQ8QdB04t89/1O/w1cDnyilFU=')
-# Channel Secret
-handler = WebhookHandler('969c4c94caed45ce4fb7a029e12a168a')
+# get channel_secret and channel_access_token from your environment variable
+channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
+channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
 
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
@@ -38,5 +39,5 @@ def handle_message(event):
 
 import os
 if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    http_port = int(os.environ.get("PORT", 8000))
+    app.run(host='0.0.0.0', port=http_port)
