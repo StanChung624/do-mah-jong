@@ -1,6 +1,5 @@
 from Deck import Deck
 from CheckUtility import *
-from tqdm import tqdm
 
 class Player():
     def __init__(self, is_owner:int=-1, index:int=0) -> None:
@@ -59,7 +58,7 @@ class Player():
 
 if __name__ == "__main__":
 
-    for count in tqdm(range(10000)):
+    for count in range(10000):
         deck = Deck()
         stan = Player(-1)
         for i in range(16):
