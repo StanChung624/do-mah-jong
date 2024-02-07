@@ -82,11 +82,9 @@ def is_win(holding):
         
         for comb in combinations:
             tri_count = 0
-            no_pair_n_txt, no_use = check_txt(comb)
+            no_pair_n_txt, no_use = check_txt(comb[:-2])
             if not no_pair_n_txt:
                 continue
-
-            no_pair_n_txt = no_pair_n_txt[:-2]
 
             result, tri_count = check_id(no_pair_n_txt, "o", tri_count)
             if not result:
@@ -106,6 +104,6 @@ def is_win(holding):
 
 if __name__ == "__main__":        
 
-    test = ['o1', 'o1', 'o1', 'W', 'W', 'W', 'o8', 'o8', 'm4', 'm4', 'm4', 'm4', 'm5', 'm6']
+    test = ['o2', 'o3', 'l3', 'l3', 'l3', 'm5', 'm7', 'm6', 'Fa', 'Fa', 'S', 'S', 'S', 'W', 'W', 'W', 'o1']
 
     print(is_win(test))
