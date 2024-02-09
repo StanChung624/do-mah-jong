@@ -45,6 +45,8 @@ def line_transmitter(in_string):
         # 胡牌 mode
         else:
             player = Player(holding=tiles)
+            if player.is_win():
+                return "胡啦!!"
             analysis = player.analyze()            
             for ditch_card, waits in analysis.items():
                 ret += "丟 <" + translate(ditch_card) + "> 等：\n"
