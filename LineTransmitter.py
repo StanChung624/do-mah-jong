@@ -1,7 +1,7 @@
 from Player import Player
 
 def line_transmitter(in_string):
-    try:
+    # try:
         tiles = list()
         in_string = in_string.replace(" ","")
         in_string = in_string.replace("\n","")
@@ -30,24 +30,48 @@ def line_transmitter(in_string):
                 else:
                     tiles.append(current+chr)
         
-        print(tiles)
-        listen_tiles = get_listen_tiles(tiles)
-        print(listen_tiles)
-
         ret = ""
-        for tile in listen_tiles:
-            ret += translate(tile) + ", "
+
+        # 聽牌 mode
+        if (len(tiles) - 2) % 3 != 0 :
+            listen_tiles = get_listen_tiles(tiles)    
+
+            
+            for tile in listen_tiles:
+                ret += translate(tile) + ", "
+
+            
+        # 胡牌 mode
+        else:
+            player = Player(holding=tiles)
+            analysis = player.analyze()            
+            for ditch_card, waits in analysis.items():
+                ret += "丟 <" + translate(ditch_card) + "> 等：\n"
+                for pairs in waits:
+                    for k,v in pairs.items():
+                        ret += "  " + translate(k) + "有 " + str(v) + "張\n"
+                ret += "\n"
 
         return ret
-    except:
-        return "請用下面範例的格式告訴我你的牌唷！\n 筒、條、萬：直接輸入數字\n 中、發、白、風：輸入張數 \n\n範例1:\n筒1112345678999 條 萬 中3 發 白 東 南 西 北 \n\n範例2:\n筒5551234發3 \n\n也可以直接告訴我數字牌的數字\n範例3:\n4567888"
+
+    # except:
+    #     return "請用下面範例的格式告訴我你的牌唷！\n"\
+    #     "筒、條、萬：直接輸入數字\n"\
+    #     "中、發、白、風：輸入張數\n"\
+    #     "記得包含雀唷!\n\n"\
+    #     "範例1:\n"\
+    #     "筒1112345678999 條 萬 中3 發 白 東 南 西 北\n\n"\
+    #     "\範例2:\n"\
+    #     "筒5551234發3\n\n"\
+    #     "也可以直接告訴我數字牌的數字\n"\
+    #     "範例3:\n4567888"
             
 
 def get_listen_tiles(holdings):
     player = Player()
-    player.holding = holdings
+    player.holding = holdings 
     return player.listen()
 
 if __name__ == "__main__":
-    test = "筒1112345678999條 萬 中3發白東南西北"
+    test = "筒34567條22 萬 中3發1"
     print(line_transmitter(test))
