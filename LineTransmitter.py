@@ -1,7 +1,7 @@
 from Player import Player
 
 def line_transmitter(in_string):
-    # try:
+    try:
         tiles = list()
         in_string = in_string.replace(" ","")
         in_string = in_string.replace("\n","")
@@ -36,6 +36,7 @@ def line_transmitter(in_string):
         if (len(tiles) - 2) % 3 != 0 :
             listen_tiles = get_listen_tiles(tiles)    
 
+            ret += "等： "
             
             for tile in listen_tiles:
                 ret += translate(tile) + ", "
@@ -54,17 +55,17 @@ def line_transmitter(in_string):
 
         return ret
 
-    # except:
-    #     return "請用下面範例的格式告訴我你的牌唷！\n"\
-    #     "筒、條、萬：直接輸入數字\n"\
-    #     "中、發、白、風：輸入張數\n"\
-    #     "記得包含雀唷!\n\n"\
-    #     "範例1:\n"\
-    #     "筒1112345678999 條 萬 中3 發 白 東 南 西 北\n\n"\
-    #     "\範例2:\n"\
-    #     "筒5551234發3\n\n"\
-    #     "也可以直接告訴我數字牌的數字\n"\
-    #     "範例3:\n4567888"
+    except:
+        return "請用下面範例的格式告訴我你的牌唷！\n"\
+        "筒、條、萬：直接輸入數字\n"\
+        "中、發、白、風：輸入張數\n"\
+        "記得包含雀唷!\n\n"\
+        "範例1:\n"\
+        "筒1112345678999 條 萬 中3 發 白 東 南 西 北\n\n"\
+        "\範例2:\n"\
+        "筒5551234發3\n\n"\
+        "也可以直接告訴我數字牌的數字\n"\
+        "範例3:\n4567888"
             
 
 def get_listen_tiles(holdings):
@@ -73,5 +74,5 @@ def get_listen_tiles(holdings):
     return player.listen()
 
 if __name__ == "__main__":
-    test = "筒34567條22 萬 中3發1"
+    test = "12345678條22"
     print(line_transmitter(test))
