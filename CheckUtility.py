@@ -1,3 +1,5 @@
+from Deck import Deck
+
 def comb_remove_pair(holding:list):
     tmp_map = dict()
     ret = list()
@@ -19,6 +21,21 @@ def comb_remove_pair(holding:list):
             out.extend([card,card])
             ret.append(out)
     return ret
+
+def get_neighbor(card:str):    
+    ret = list()
+    # check is numeric card
+    if card in Deck().m_list or \
+    card in Deck().l_list or \
+    card in Deck().o_list:        
+        neighbor = [int(card[1]) - 2, int(card[1]) - 1, int(card[1]), int(card[1]) +1, int(card[1]) + 2]
+        for nei in neighbor:
+            if nei >= 1 and nei <= 9:
+                ret.append(card[0]+str(nei))
+        return ret
+    else:
+        return None
+
 
 def check_txt(no_pair:list):
     txt_map = dict(E=0, S=0, W=0, N=0, Ch=0, Fa=0, By=0)

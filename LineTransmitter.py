@@ -1,4 +1,5 @@
 from Player import Player
+from test.TestLineTransmitter import *
 
 def line_transmitter(in_string):
     try:
@@ -19,7 +20,7 @@ def line_transmitter(in_string):
                         return tile[1] + k
         
         current = "m"
-        print(in_string)
+        
         for chr in in_string:
             if not chr.isnumeric() or chr == "萬":
                 current = map[chr]
@@ -35,11 +36,13 @@ def line_transmitter(in_string):
         # 聽牌 mode
         if (len(tiles) - 2) % 3 != 0 :
             listen_tiles = get_listen_tiles(tiles)    
-
-            ret += "等： "
-            
-            for tile in listen_tiles:
-                ret += translate(tile) + ", "
+            if len(listen_tiles) > 0:
+                ret += "等： "
+                
+                for tile in listen_tiles:
+                    ret += translate(tile) + ", "
+            else:
+                ret = "好像沒有等耶!"
 
             
         # 胡牌 mode
@@ -64,7 +67,7 @@ def line_transmitter(in_string):
         "記得包含雀唷!\n\n"\
         "範例1:\n"\
         "筒1112345678999 條 萬 中3 發 白 東 南 西 北\n\n"\
-        "\範例2:\n"\
+        "範例2:\n"\
         "筒5551234發3\n\n"\
         "也可以直接告訴我數字牌的數字\n"\
         "範例3:\n4567888"
@@ -76,5 +79,5 @@ def get_listen_tiles(holdings):
     return player.listen()
 
 if __name__ == "__main__":
-    test = "12345678條22"
-    print(line_transmitter(test))
+    print("TestDitchCardMode result = ", TestDitchCardMode())
+    print("TestListenCardMode result = ", TestListenCardMode())

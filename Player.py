@@ -3,10 +3,12 @@ from CheckUtility import *
 
 class Player():
     def __init__(self, holding:list=None, is_owner:int=-1, index:int=0) -> None:
+        # card tracker by player
         self.tracker = dict()
         for card in Deck.unique_card:
             self.tracker[card] = 4
 
+        # flower
         self.flower = list()
         if holding:
             self.holding = holding
@@ -14,26 +16,51 @@ class Player():
                 self.tracker[card]-=1
         else:
             self.holding = list()
+
+        # owner of the game
         self.is_owner = is_owner
+
+        # playing sequence
         self.index = index
         
-
     def is_owner(self)->int:
         return self.is_owner
     
     def set_is_owner(self, is_owner:int)->None:
         self.is_owner = is_owner
 
-    def draw_card(self, deck:Deck):
-        self.draw_card(deck.draw_card())
-
-    def draw_card(self, card):
-        self.holding.append(card)
-        self.tracker[card] -=1
-        
+    def draw_card(self, deck:Deck=None, card:str=None):
+        if deck:
+            card = deck.serve()
+            self.holding.append(card)
+            self.tracker[card] -= 1
+            return card
+        elif card:
+            self.holding.append(card)
+            self.tracker[card] -= 1
+            return card
 
     def sort_card(self):
         self.holding.sort()
+
+    def grade(self):
+        ret = dict()
+        for card in self.holding:
+            ret[card] = -1
+
+        # for duplicated cards
+        for card in self.holding:
+            ret[card]+=1
+
+        for card in self.holding:
+            neighbor_cards = get_neighbor(card)
+            if neighbor_cards:
+                for nei in neighbor_cards:
+                    if nei in ret.keys():
+                        ret[card] += 1
+                        ret[nei] += 1
+
+        print(ret)
 
     def amend_flower(self, deck:Deck):
         flag = False
@@ -54,11 +81,17 @@ class Player():
         print(self.flower)
         print(self.holding)
 
-    def discard_card(self, card):
+    def discard_card(self, card):        
         if card in self.holding:
-            self.holding.remove(card)
+            id = self.holding.index(card)
+            self.holding.pop(id)
         else:
             print("Error, No card as ", card, " in holding")
+
+    def see(self, card, player):
+        self.tracker[card] -= 1
+        is_upstream_player = (self.index + 3) % 4 == player.index
+        print(is_upstream_player)
 
     def listen(self):
         ret = list()
@@ -70,43 +103,36 @@ class Player():
         return ret   
     
     def analyze(self):
-        ret = dict()
-        for card in self.holding:
-            self.discard_card(card)
-            listen_cards = self.listen()
-            if len(listen_cards) > 0:
-                ret_ = list()
-                for lis in listen_cards:
-                    ret_.append({lis:self.tracker[lis]})
-                ret[card] = ret_
-            self.holding.append(card)
+        if self.is_win():
+            return 
+        else:
+            ret = dict()
+            for card in self.holding:
+                self.discard_card(card)
+                listen_cards = self.listen()
+                if len(listen_cards) > 0:
+                    ret_ = list()
+                    for lis in listen_cards:
+                        ret_.append({lis:self.tracker[lis]})
+                    ret[card] = ret_
+                self.holding.append(card)
 
-        return ret
-
+            return ret
 
 
 if __name__ == "__main__":
+    deck = Deck()
+    player = Player()
 
-    test = ['o2', 'o3', 'o4', 'o5', 'o6', 'm5', 'm7', 'm6', 'Fa', 'Fa', 'S', 'S', 'S', 'W', 'W', 'W', 'E']
+    # start
+    for i in range(16):
+        player.draw_card(deck=deck)
 
-    player = Player(holding=test)
+    player.amend_flower(deck)
 
-    print(player.analyze())
+    player.sort_card()
+    player.show()
 
-    # for count in range(10000):
-    #     deck = Deck()
-    #     stan = Player(-1)
-    #     for i in range(16):
-    #         stan.draw_card(deck)
-
-    #     stan.amend_flower(deck)
-    #     stan.sort_card()
-        
-    #     listen_card = stan.listen()
-    #     if(listen_card):            
-    #         stan.show()
-    #         print(listen_card)
-    #         print(1/count*100, "%")
-
+    player.grade()
 
 
