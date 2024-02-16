@@ -133,6 +133,7 @@ if __name__ == "__main__":
     player.sort_card()
     player.show()
 
+
     player.grade()
 
 
