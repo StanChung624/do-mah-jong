@@ -79,5 +79,5 @@ def get_listen_tiles(holdings):
     return player.listen()
 
 if __name__ == "__main__":
-    print("TestDitchCardMode result = ", TestDitchCardMode())
-    print("TestListenCardMode result = ", TestListenCardMode())
+    print("TestDitchCardMode result = ", TestDitchCardMode(line_transmitter))
+    print("TestListenCardMode result = ", TestListenCardMode(line_transmitter))
