@@ -55,8 +55,9 @@ def line_transmitter(in_string):
                 ret += "丟 <" + translate(ditch_card) + "> 等：\n"
                 for pairs in waits:
                     for k,v in pairs.items():
-                        ret += "  " + translate(k) + "有 " + str(v) + "張\n"
-                ret += "\n"
+                        ret += "  " + translate(k) + "有 " + str(v) + "張\n"                
+                if ditch_card != list(analysis.keys())[-1]:
+                    ret += "\n"
 
         return ret
 

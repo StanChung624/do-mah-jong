@@ -1,5 +1,6 @@
 from Deck import Deck
 from CheckUtility import *
+from typing import Dict
 
 class Player():
     def __init__(self, holding:list=None, is_owner:int=-1, index:int=0) -> None:
@@ -102,7 +103,7 @@ class Player():
             self.discard_card(card)
         return ret   
     
-    def analyze(self):
+    def analyze(self)->Dict[str,List[Dict[str,int]]]:
         if self.is_win():
             return 
         else:

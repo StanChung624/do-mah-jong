@@ -1,6 +1,14 @@
 from Deck import Deck
+from typing import Dict, List, Tuple
 
-def comb_remove_pair(holding:list):
+def comb_remove_pair(holding:List[str])->List[List[str]]:
+    """
+        remove pair and returns combinations from given holdings.
+        ex: given [A,A,B,B,B,C,D,E]
+        return: [[B,B,B,C,D,E], 
+                 [A,A,B,C,D,E] ]
+
+    """
     tmp_map = dict()
     ret = list()
     for card in holding:
@@ -22,7 +30,12 @@ def comb_remove_pair(holding:list):
             ret.append(out)
     return ret
 
-def get_neighbor(card:str):    
+def get_neighbor(card:str)->List[str]:
+    """
+        given card in format from deck, given -2 to +2.
+        ex: given "o3"
+        return: ["o1","o2","o3","o4","o5"]
+    """    
     ret = list()
     # check is numeric card
     if card in Deck().m_list or \
@@ -37,7 +50,13 @@ def get_neighbor(card:str):
         return None
 
 
-def check_txt(no_pair:list):
+def check_txt(no_pair:List[str])->Tuple[List[str], Dict[str,int]]:
+    """
+        check for text card in holdings (pair removed already)
+        and return with only numeric cards, and map of text
+        ex: given o1, o2, o3, o4, o4, o4, N, N, N, S, S
+        return: [o1, o2. o3, o4, o4, o4] and {N:3, S:2}
+    """
     txt_map = dict(E=0, S=0, W=0, N=0, Ch=0, Fa=0, By=0)
     ret = list()
     for card in no_pair:
@@ -48,7 +67,7 @@ def check_txt(no_pair:list):
     
     for k, v in txt_map.items():
         if v == 1 or v == 2:
-            return False, None
+            return None, None
     return ret, txt_map
         
 def check_id(no_pair_n_txt:list, target:str, tri_count:int = 0):
