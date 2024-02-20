@@ -6,7 +6,7 @@ class Deck():
     l_list = ["l1","l2","l3","l4","l5","l6","l7","l8","l9"]
     t_list = ["E","S","W","N","Ch","Fa","By"]
     f_list = ["x1","x2","x3","x4","X1","X2","X3","X4"]
-    unique_card = m_list + o_list + l_list + t_list + f_list
+    unique_card = m_list + o_list + l_list + t_list
 
     def __init__(self):
         self.deck_tracker = dict()
