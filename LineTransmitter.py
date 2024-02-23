@@ -50,7 +50,7 @@ def line_transmitter(in_string):
             player = Player(holding=tiles)
             if player.is_win():
                 return "胡啦!!"
-            analysis = player.analyze()[0]
+            analysis = player.analyze_ditch_to_listen()[0]
             for ditch_card, waits in analysis.items():
                 ret += "丟 <" + translate(ditch_card) + "> 等：\n"
                 for pairs in waits:

@@ -3,31 +3,40 @@ from typing import Dict, List, Tuple
 
 def comb_remove_pair(holding:List[str])->List[List[str]]:
     """
-        remove pair and returns combinations from given holdings.
+        move pair to last and returns combinations from given holdings.
         ex: given [A,A,B,B,B,C,D,E]
-        return: [[B,B,B,C,D,E], 
-                 [A,A,B,C,D,E] ]
+        return: [[B,B,B,C,D,E,A,A], 
+                 [A,A,B,C,D,E,B,B] ]
 
     """
-    tmp_map = dict()
     ret = list()
+    tmp_map = dict()
     for card in holding:
         tmp_map[card] = 0
     for card in holding:
         tmp_map[card] += 1
 
-    for card, value in tmp_map.items():
-        if value >= 2:
-            out = list()
-            cnt = 0
-            for c in holding:
-                if c == card and cnt < 2:
-                    cnt+=1
-                    pass
-                else:
-                    out.append(c)
-            out.extend([card,card])
-            ret.append(out)
+    def remove_pair(target:str)->List[str]:
+        ret = list()
+        for card, count in tmp_map.items():
+            if target == card:
+                ret += [card]*(count-2)
+            else:
+                ret += [card]*count
+        ret += [target, target]
+        return ret
+
+
+    for card, count in tmp_map.items():
+        # for text pair only
+        if count == 2 and card in Deck().t_list:
+            return [remove_pair(card)]
+
+    for card, count in tmp_map.items():
+        if count >= 2:
+            ret.append(remove_pair(card))
+            
+
     return ret
 
 def get_neighbor(card:str)->List[str]:
@@ -65,9 +74,9 @@ def check_txt(no_pair:List[str])->Tuple[List[str], Dict[str,int]]:
         else:
             ret.append(card)
     
-    for k, v in txt_map.items():
-        if v == 1 or v == 2:
-            return None, None
+    for card, count in txt_map.items():
+        if count < 3:
+            return ret, None
     return ret, txt_map
         
 def check_id(no_pair_n_txt:list, target:str, tri_count:int = 0):
@@ -119,7 +128,7 @@ def is_win(holding):
         for comb in combinations:
             tri_count = 0
             no_pair_n_txt, no_use = check_txt(comb[:-2])
-            if not no_pair_n_txt:
+            if not no_use:
                 continue
 
             result, tri_count = check_id(no_pair_n_txt, "o", tri_count)
@@ -143,3 +152,7 @@ if __name__ == "__main__":
     test = ['o2', 'o3', 'l3', 'l3', 'l3', 'm5', 'm7', 'm6', 'Fa', 'Fa', 'S', 'S', 'S', 'W', 'W', 'W', 'o1']
 
     print(is_win(test))
+
+    no_pair = comb_remove_pair(test)
+    for comb in no_pair:
+        print(comb)

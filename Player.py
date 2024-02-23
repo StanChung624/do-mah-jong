@@ -50,8 +50,7 @@ class Player():
     def _action_decorator(action):
         def wrapper(self, *args, **kwargs):
             action(self, *args, **kwargs)
-            self.__reset_action()            
-            self.show()            
+            self.__reset_action()                    
         return wrapper
     
     def ditch(self)->str:
@@ -79,6 +78,7 @@ class Player():
         for i in range(3):
             self.holding.remove(self.saw_card)
         print("amend :", self.draw_card())
+        self.amend_flower()
 
     @_action_decorator
     def eat(self, **kwargs):
@@ -107,22 +107,30 @@ class Player():
     def draw_card(self, *args, **kwargs):
         deck = kwargs.setdefault("deck", self.deck)
         card = kwargs.setdefault("card", None)
+        announce = kwargs.setdefault("announce", False)
         if card:
             self.holding.append(card)
             self.tracker[card] -= 1
+            self.saw_card = card
+            if announce:
+                print("draw", card)
             return card
         elif deck:
             card = deck.serve()
-            self.holding.append(card)            
-            self.tracker[card] -= 1
-            return card
+            if card:
+                self.holding.append(card)            
+                self.tracker[card] -= 1
+                self.saw_card = card
+                if announce:
+                    print("draw", card)
+                return card
+            else:
+                return None
 
     @_sort
-    def grade(self)->Tuple[Dict[str,int], str]:        
-        if self.is_win():
-            return  None, None
+    def suggest_ditch(self)->Tuple[Dict[str,int], str]:        
         
-        possible_ditch = self.analyze()[1]
+        possible_ditch = self.analyze_ditch_to_listen()[1]
         if len(possible_ditch) > 0:
             # print("use analysis result")
             # get best option from analysis            
@@ -194,11 +202,10 @@ class Player():
         else:
             print("[error] discard card failed.")
             return None
-            
-            
-
+    
     @_sort
     def see(self, card:str, player=None, player_index:int=None)->List[List[str]]:
+        self.__reset_action()
         self.saw_card = card
         self.tracker[card] -= 1
 
@@ -295,17 +302,21 @@ class Player():
             return False
 
     @_sort
-    def analyze(self)->Dict[str,List[Dict[str,int]]]:        
+    def analyze_ditch_to_listen(self)->Dict[str,List[Dict[str,int]]]:        
         if self.is_win():
             return 
         else:
             ret = dict()
             efficiency = dict()
 
-            tmp_holding = self.holding
-            for card in tmp_holding:
+            tmp_holding = list(self.holding)            
+            for card in tmp_holding:               
                 self.holding.remove(card)
                 listen_cards = self.listen()
+                if listen_cards is None:
+                    self.show()
+                    self.saw_card
+                    
                 if len(listen_cards) > 0:
                     ret_ = list()
                     waits = 0
@@ -321,12 +332,10 @@ class Player():
 
 
 if __name__ == "__main__":
-    test = ['l1', 'l2', 'l5', 'l7', 'm2', 'm5', 'm7', 'm8', 'm8', 'm9', 'm9', 'o2', 'o5', 'o5', 'o9', 'o9']
+    test = ['l1', 'l2', 'l3', 'l6', 'l6', 'm3', 'm4', 'm5']
     stan = Player(index=0)
 
     for card in test:
         stan.draw_card(card=card)
 
-    stan.see("l3", player_index=3)
-
-    stan.action()
+    print(stan.is_win())

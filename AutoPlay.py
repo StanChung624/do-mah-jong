@@ -1,14 +1,14 @@
 from Deck import Deck
 from Player import Player
-from CoPlayer import CoPlayer
+from COMPlayer import COMPlayer
 
 
 deck = Deck()
 
-players = [Player(index=0, is_owner= 0, deck=deck),\
-           CoPlayer(index=1, is_owner=-1, deck=deck),\
-           CoPlayer(index=2, is_owner=-1, deck=deck),\
-           CoPlayer(index=3, is_owner=-1, deck=deck)]
+players = [COMPlayer(index=0, is_owner= 0, deck=deck),\
+           COMPlayer(index=1, is_owner=-1, deck=deck),\
+           COMPlayer(index=2, is_owner=-1, deck=deck),\
+           COMPlayer(index=3, is_owner=-1, deck=deck)]
 
 for i in range(4):
     for id in range(4):        
@@ -25,12 +25,18 @@ id = 0
 to_stop = False
 while not to_stop:
 
-    players[id].draw_card()
+    if not players[id].draw_card(announce=True):
+        print("no body win..")
+        to_stop = True
+        break
+
     players[id].amend_flower()
 
     if players[id].is_win():
         is_stop = True
         print("win!")
+        players[id].show()
+        break
 
     card = players[id].ditch()
 
@@ -45,10 +51,14 @@ while not to_stop:
     other_ids.reverse()
     for other in other_ids:
         if players[other].action():
-            if players[other].is_win():
-                is_stop = True
-                print("win!")
             print("Player", other)
+
+            if players[other].is_win():
+                print("win!")
+                players[other].show()
+                to_stop = True
+                break                
+            
             print("\t ditch:", players[other].ditch())
             id = other
             break

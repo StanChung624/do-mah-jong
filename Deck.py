@@ -50,8 +50,7 @@ class Deck():
         return self.seq
     
     def serve(self)->str:
-        if len(self.seq) == 0:
-            print("[error] deck out of cards!")
+        if len(self.seq) == 0:            
             return None
         self.deck_tracker[self.seq[0]] -= 1        
         return self.seq.pop(0)
