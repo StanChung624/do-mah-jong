@@ -35,35 +35,61 @@ class Player():
 
         # saw card temporary storage
         self.saw_card = ""
+        self.eat_combinations = []
         self.can_eat = False
         self.can_pon = False
         self.can_gan = False
         self.can_win = False
 
     def _sort(action):
-        def warpper(self, *args, **kwargs):            
+        def wrapper(self, *args, **kwargs):            
             self.holding.sort()
-            action(self, *args, **kwargs)
-        return warpper
+            return action(self, *args, **kwargs)
+        return wrapper
     
     def _action_decorator(action):
-        def wrapper(self, card):
-            action(self, card)
-            self.show()     
-            self.__reset_action()       
+        def wrapper(self, *args, **kwargs):
+            action(self, *args, **kwargs)
+            self.__reset_action()            
+            self.show()            
         return wrapper
+    
+    def ditch(self)->str:
+        return self.discard_card_interface()
+
+    @_sort
+    def discard_card_interface(self):
+        id = 1
+        for card in self.holding:
+            card = ":[" + card + "],"
+            print(id, card, end="")
+            id += 1
+        print()
+        return self.discard_card(index=int(input()))
 
     @_action_decorator
-    def pon(self, card):
-        self.flower += [card]*3
+    def pon(self):
+        self.flower += [self.saw_card]*3
         for i in range(2):
-            self.holding.remove(card)
+            self.holding.remove(self.saw_card)
     
     @_action_decorator
-    def gan(self, card):
-        self.flower += [card]*4
+    def gan(self):
+        self.flower += [self.saw_card]*4
         for i in range(3):
-            self.holding.remove(card)
+            self.holding.remove(self.saw_card)
+        print("amend :", self.draw_card())
+
+    @_action_decorator
+    def eat(self, **kwargs):
+        kwargs.setdefault("formation", None)
+        if kwargs["formation"] is None:
+            for i in range(len(self.eat_combinations)):
+                print(i+1, ":", self.eat_combinations[i])
+            kwargs["formation"] = self.eat_combinations[int(input(":"))-1]
+        self.flower += kwargs["formation"]
+        self.holding.remove(kwargs["formation"][0])
+        self.holding.remove(kwargs["formation"][-1])
 
     def __reset_action(self)->None:
         self.can_eat = False
@@ -72,47 +98,41 @@ class Player():
         self.can_win = False
     
     def is_owner(self)->int:
-        return self.is_owner
+        return self.is_owner    
     
-    @_sort
-    def set_is_owner(self, *args, **kwargs)->None:        
-        self.is_owner = int(args[0])
+    def set_is_owner(self, owner_index:int)->None:
+        self.is_owner = owner_index
 
     @_sort
     def draw_card(self, *args, **kwargs):
         deck = kwargs.setdefault("deck", self.deck)
         card = kwargs.setdefault("card", None)
-        if deck:
+        if card:
+            self.holding.append(card)
+            self.tracker[card] -= 1
+            return card
+        elif deck:
             card = deck.serve()
             self.holding.append(card)            
             self.tracker[card] -= 1
             return card
-        elif card:
-            self.holding.append(card)
-            self.tracker[card] -= 1
-            return card
 
-    def grade(self)->Tuple[Dict[str,int], str]:
-        self.holding.sort()
+    @_sort
+    def grade(self)->Tuple[Dict[str,int], str]:        
         if self.is_win():
             return  None, None
         
-        possible_ditch = self.analyze()
+        possible_ditch = self.analyze()[1]
         if len(possible_ditch) > 0:
             # print("use analysis result")
             # get best option from analysis            
             most_waits = 0
             ditch_card = ""
-            for card, waits in possible_ditch.items():
-                wait_count = 0
-                for wait in waits:
-                    for k, v in wait.items():
-                        wait_count += v
-                if wait_count >= most_waits:
+            for card, waits in possible_ditch.items():                
+                if waits >= most_waits:
                     ditch_card = card
-                    most_waits = wait_count            
+                    most_waits = waits
             return None, ditch_card
-
 
         ret = dict()
         for card in self.holding:
@@ -144,16 +164,16 @@ class Player():
     @_sort
     def amend_flower(self, *args, **kwargs):
         deck = kwargs.setdefault("deck", self.deck)
-        flag = False
-        for i in range(len(self.holding)):
-            card = self.holding[i]
+        if not deck:
+            print("[err] No card amended, for deck is not specified.")
+        
+        for card in self.holding:            
             if 'x' in card or 'X' in card:
-                self.holding.pop(i)
+                self.holding.pop(self.holding.index(card))
                 self.flower.append(card)
                 self.draw_card(deck)
-                return self.amend_flower(deck)
-        return None
 
+    @_sort
     def is_win(self):
         return is_win(self.holding)
     
@@ -162,23 +182,35 @@ class Player():
         print(self.flower)
         print(self.holding)
 
-    def discard_card(self, card):        
-        try:
-            id = self.holding.index(card)
-            self.holding.pop(id)
-        except:
-            self.show()
-            print("Error, No card as ", card, " in holding")            
+    def discard_card(self, card:str=None, index:int=None):        
+        if card:        
+            self.holding.remove(card)
+            return card
+        elif index:
+            index -= 1
+            card = self.holding[index]
+            self.holding.remove(card)
+            return card
+        else:
+            print("[error] discard card failed.")
+            return None
+            
+            
 
-    def see(self, card, player=None):
-        self.holding.sort()
+    @_sort
+    def see(self, card:str, player=None, player_index:int=None)->List[List[str]]:
         self.saw_card = card
         self.tracker[card] -= 1
+
+        # return in-take combination
+        ret = []
 
         is_upstream_player = True
 
         if player:
-            is_upstream_player = (self.index + 3) % 4 == player.index        
+            player_index = player.index
+        if player_index is not None:
+            is_upstream_player = (self.index + 3) % 4 == player_index
         
         if card in self.holding:
             card_sum = dict()
@@ -189,10 +221,12 @@ class Player():
 
             if card_sum[card] >= 2:
                 self.can_pon = True
+                # ret.append([card] * 3)
             if card_sum[card] == 3:
                 self.can_gan = True
+                # ret.append([card] * 4)
         
-        possible_eat = list()
+        
         if card in Deck().l_list or card in Deck().m_list or card in Deck().o_list:
             neighbor_card = get_neighbor(card)            
             self.holding.append(card)
@@ -200,68 +234,99 @@ class Player():
                 if neighbor_card[i] in self.holding and \
                 neighbor_card[i+1] in self.holding and \
                 neighbor_card[i+2] in self.holding:
-                    possible_eat.append(neighbor_card[i:i+3])                           
+                    combination = neighbor_card[i:i+3]
+                    combination.remove(card)
+                    ret.append([combination[0], card, combination[1]])
                     self.can_eat = is_upstream_player
             
-            self.holding.remove(card)
-            print(possible_eat)
+            self.holding.remove(card)            
 
         if card in self.listen():
             self.can_win = True
 
+        self.eat_combinations = ret
 
+    @_sort
     def listen(self):
         if self.is_win():
             return None
-        self.holding.sort()
         ret = list()
         for card in Deck.unique_card:
             self.holding.append(card)
             if(self.is_win()):
                 ret.append(card)
-            self.discard_card(card)
-        return ret   
+            self.holding.remove(card)
+        return ret
     
-    def analyze(self)->Dict[str,List[Dict[str,int]]]:
-        self.holding.sort()
+    def action(self)->bool:
+        msg = ""
+        actions = []
+        opt = 1
+        if(self.can_eat):
+            msg += str(opt) + " eat\n"
+            actions.append(self.eat)
+            opt+=1
+        if(self.can_pon):
+            msg += str(opt) + " pon\n"
+            actions.append(self.pon)
+            opt+=1
+        if(self.can_gan):
+            msg += str(opt) + " gan\n"
+            actions.append(self.gan)
+            opt+=1
+        if(self.can_win):
+            msg += str(opt) + " win\n"
+            self.holding.append(self.saw_card)            
+            actions.append(self.show)
+            opt+=1
+
+        if self.can_eat or self.can_gan or self.can_pon or self.can_win:            
+            self.show()
+            print("actions:")
+            print(msg, "0 none")
+            opt = int(input())-1
+            if opt >= 0:
+                actions[opt]()
+                return True
+            else:
+                return False                
+            
+        else:
+            return False
+
+    @_sort
+    def analyze(self)->Dict[str,List[Dict[str,int]]]:        
         if self.is_win():
             return 
         else:
             ret = dict()
+            efficiency = dict()
+
             tmp_holding = self.holding
             for card in tmp_holding:
                 self.holding.remove(card)
                 listen_cards = self.listen()
                 if len(listen_cards) > 0:
                     ret_ = list()
+                    waits = 0
                     for lis in listen_cards:
                         ret_.append({lis:self.tracker[lis]})
+                        waits += self.tracker[lis]
                     ret[card] = ret_
+                    efficiency[card] = waits
+
                 self.holding.append(card)
 
-            return ret
+            return ret, efficiency
 
 
 if __name__ == "__main__":
-    
-    stan = Player()
-
-    stan.set_is_owner(5)
-
-    test = ['o2', 'o3', 'l3', 'l3', 'l3', 'm5', 'm6', 'Fa', 'Fa', 'S', 'S', 'S', 'W', 'W', 'W', 'o4', 'o5', 'o6', 'x1', 'X4']
+    test = ['l1', 'l2', 'l5', 'l7', 'm2', 'm5', 'm7', 'm8', 'm8', 'm9', 'm9', 'o2', 'o5', 'o5', 'o9', 'o9']
+    stan = Player(index=0)
 
     for card in test:
         stan.draw_card(card=card)
 
-    stan.amend_flower()
+    stan.see("l3", player_index=3)
 
-    stan.see("o4")
-
-    stan.pon("W")
-
-    pass
-        
-
-
-
-
+    stan.action()
