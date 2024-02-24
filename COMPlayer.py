@@ -4,21 +4,24 @@ from Player import Player
 from CheckUtility import *
 
 class COMPlayer(Player):    
-    def action(self)->bool:
-        
+    def action(self, **kwargs)->bool:
+        announce = kwargs.setdefault("announce", False)
         if self.can_win:
             self.holding.append(self.saw_card)            
             return True
         elif self.can_eat:
-            # print("[auto] eat")
+            if announce:
+                print("[auto] eat", end=" ")
             self.eat(formation=self.eat_formation_advisor())
             return True
         elif self.can_pon:
-            # print("[auto] pon")
+            if announce:
+                print("[auto] pon", end=" ")
             self.pon()
             return True
         elif self.can_gan:
-            # print("[auto] gan")
+            if announce:
+                print("[auto] gan", end=" ")
             self.gan()
             return True
         else:
@@ -48,7 +51,7 @@ class COMPlayer(Player):
                 best_tri_count = tri_count
                 best_formation = formation
 
-        return formation
+        return best_formation
 
     
     def ditch(self):        
@@ -59,9 +62,7 @@ class COMPlayer(Player):
 
 if __name__ == "__main__":
     com = COMPlayer()
-    test = ["l3","l3","l4","l5","l6","l7","l8"]
+    test = ['l1', 'l2', 'l3', 'm5', 'm5', 'm6', 'm7']
     for card in test:
         com.draw_card(card=card)
-    com.see("l6")
-
-    print(com.eat_formation_advisor())
+    print(com.listen())

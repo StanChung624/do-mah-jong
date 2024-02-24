@@ -1,7 +1,7 @@
 from Deck import Deck
 from CheckUtility import *
 from typing import Dict
-
+from abc import ABC, abstractmethod
 
 class Player():
     def __init__(self, holding:list=None, is_owner:int=-1, index:int=0, deck:Deck=None) -> None:
@@ -49,31 +49,26 @@ class Player():
     
     def _action_decorator(action):
         def wrapper(self, *args, **kwargs):
+            announce = kwargs.setdefault("announce", False)
+            if announce:
+                print(action.__name__)
             action(self, *args, **kwargs)
             self.__reset_action()                    
         return wrapper
     
+    @abstractmethod
     def ditch(self)->str:
-        return self.discard_card_interface()
+        return None
 
-    @_sort
-    def discard_card_interface(self):
-        id = 1
-        for card in self.holding:
-            card = ":[" + card + "],"
-            print(id, card, end="")
-            id += 1
-        print()
-        return self.discard_card(index=int(input()))
 
     @_action_decorator
-    def pon(self):
+    def pon(self, **kwargs):
         self.flower += [self.saw_card]*3
         for i in range(2):
             self.holding.remove(self.saw_card)
     
     @_action_decorator
-    def gan(self):
+    def gan(self, **kwargs):
         self.flower += [self.saw_card]*4
         for i in range(3):
             self.holding.remove(self.saw_card)
@@ -82,7 +77,7 @@ class Player():
 
     @_action_decorator
     def eat(self, **kwargs):
-        kwargs.setdefault("formation", None)
+        kwargs.setdefault("formation", None)        
         if kwargs["formation"] is None:
             for i in range(len(self.eat_combinations)):
                 print(i+1, ":", self.eat_combinations[i])
@@ -265,41 +260,9 @@ class Player():
             self.holding.remove(card)
         return ret
     
-    def action(self)->bool:
-        msg = ""
-        actions = []
-        opt = 1
-        if(self.can_eat):
-            msg += str(opt) + " eat\n"
-            actions.append(self.eat)
-            opt+=1
-        if(self.can_pon):
-            msg += str(opt) + " pon\n"
-            actions.append(self.pon)
-            opt+=1
-        if(self.can_gan):
-            msg += str(opt) + " gan\n"
-            actions.append(self.gan)
-            opt+=1
-        if(self.can_win):
-            msg += str(opt) + " win\n"
-            self.holding.append(self.saw_card)            
-            actions.append(self.show)
-            opt+=1
-
-        if self.can_eat or self.can_gan or self.can_pon or self.can_win:            
-            self.show()
-            print("actions:")
-            print(msg, "0 none")
-            opt = int(input())-1
-            if opt >= 0:
-                actions[opt]()
-                return True
-            else:
-                return False                
-            
-        else:
-            return False
+    @abstractmethod
+    def action(self, **kwargs)->bool:
+        return None
 
     @_sort
     def analyze_ditch_to_listen(self)->Dict[str,List[Dict[str,int]]]:        
@@ -329,13 +292,3 @@ class Player():
                 self.holding.append(card)
 
             return ret, efficiency
-
-
-if __name__ == "__main__":
-    test = ['l1', 'l2', 'l3', 'l6', 'l6', 'm3', 'm4', 'm5']
-    stan = Player(index=0)
-
-    for card in test:
-        stan.draw_card(card=card)
-
-    print(stan.is_win())

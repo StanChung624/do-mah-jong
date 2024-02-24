@@ -8,7 +8,7 @@ def comb_remove_pair(holding:List[str])->List[List[str]]:
         return: [[B,B,B,C,D,E,A,A], 
                  [A,A,B,C,D,E,B,B] ]
 
-    """
+    """    
     ret = list()
     tmp_map = dict()
     for card in holding:
@@ -75,7 +75,7 @@ def check_txt(no_pair:List[str])->Tuple[List[str], Dict[str,int]]:
             ret.append(card)
     
     for card, count in txt_map.items():
-        if count < 3:
+        if count < 3 and count != 0:
             return ret, None
     return ret, txt_map
         
@@ -126,6 +126,7 @@ def is_win(holding):
             return False
         
         for comb in combinations:
+            
             tri_count = 0
             no_pair_n_txt, no_use = check_txt(comb[:-2])
             if not no_use:
@@ -152,7 +153,3 @@ if __name__ == "__main__":
     test = ['o2', 'o3', 'l3', 'l3', 'l3', 'm5', 'm7', 'm6', 'Fa', 'Fa', 'S', 'S', 'S', 'W', 'W', 'W', 'o1']
 
     print(is_win(test))
-
-    no_pair = comb_remove_pair(test)
-    for comb in no_pair:
-        print(comb)
