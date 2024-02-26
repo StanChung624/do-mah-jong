@@ -40,6 +40,10 @@ class Deck():
         for i in range(16):
             self.sea.append(self.seq.pop(len(self.seq)-1-i))
 
+    def roll_dice(self)->int:
+        return random.randint(a=3, b=18)
+ 
+
     def remain_number(self)->int:
         count = 0
         for card in self.deck_tracker.keys():

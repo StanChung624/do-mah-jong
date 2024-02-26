@@ -4,7 +4,7 @@ from COMPlayer import COMPlayer
 
 deck = Deck()
 
-players = [MANPlayer(index=0, is_owner= 0, deck=deck),
+players = [COMPlayer(index=0, is_owner= 0, deck=deck),
            COMPlayer(index=1, is_owner=-1, deck=deck),
            COMPlayer(index=2, is_owner=-1, deck=deck),
            COMPlayer(index=3, is_owner=-1, deck=deck)]
@@ -68,7 +68,7 @@ while not to_stop:
         return current_player_id
 
     id = others_check(card, id)    
-    if not id:
+    if id is None:
         break
     
     id += 1

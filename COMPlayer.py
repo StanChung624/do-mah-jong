@@ -8,24 +8,24 @@ class COMPlayer(Player):
         announce = kwargs.setdefault("announce", False)
         if self.can_win:
             self.holding.append(self.saw_card)            
-            return True
+            return "win"
         elif self.can_eat:
             if announce:
                 print("[auto] eat", end=" ")
             self.eat(formation=self.eat_formation_advisor())
-            return True
+            return "eat"
         elif self.can_pon:
             if announce:
                 print("[auto] pon", end=" ")
             self.pon()
-            return True
+            return "pon"
         elif self.can_gan:
             if announce:
                 print("[auto] gan", end=" ")
             self.gan()
-            return True
+            return "gan"
         else:
-            return False
+            return None
 
     def eat_formation_advisor(self)->List[str]:
         formations = self.eat_combinations

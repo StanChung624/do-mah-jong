@@ -20,6 +20,8 @@ class Player():
 
         # flower
         self.flower = list()
+
+        # load holding
         if holding:
             self.holding = holding
             for card in holding:
@@ -40,6 +42,9 @@ class Player():
         self.can_pon = False
         self.can_gan = False
         self.can_win = False
+
+    def reset(self, holding:list=None, is_owner:int=-1, deck:Deck=None) -> None:
+        self.__init__(holding, is_owner, self.index, deck)
 
     def _sort(action):
         def wrapper(self, *args, **kwargs):            
@@ -181,9 +186,13 @@ class Player():
         return is_win(self.holding)
     
     @_sort
-    def show(self):        
-        print(self.flower)
-        print(self.holding)
+    def show(self, announce:bool=True):
+        content = "player index = " + str(self.index) + ", holding:\n"
+        content += str(self.flower) + "\n"
+        content += str(self.holding) + "\n"
+        if announce:
+            print(content)
+        return content
 
     def discard_card(self, card:str=None, index:int=None):        
         if card:        

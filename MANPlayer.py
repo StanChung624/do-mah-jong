@@ -35,12 +35,12 @@ class MANPlayer(Player):
             opt = int(input())-1
             if opt >= 0:
                 actions[opt]()
-                return True
+                return actions[opt].__name__
             else:
-                return False                
+                return None                
             
         else:
-            return False
+            return None
 
     def action(self, **kwargs)->bool:
         return self.__action_interface()
