@@ -7,7 +7,7 @@ class COMPlayer(Player):
     def action(self, **kwargs)->bool:
         announce = kwargs.setdefault("announce", False)
         if self.can_win:
-            self.holding.append(self.saw_card)            
+            self.holding.append(self.see_card)            
             return "win"
         elif self.can_eat:
             if announce:
@@ -36,7 +36,7 @@ class COMPlayer(Player):
         best_formation = list()
         for formation in formations:
 
-            holdings = self.holding + [self.saw_card]
+            holdings = self.holding + [self.see_card]
 
             for card in formation:
                 holdings.remove(card)

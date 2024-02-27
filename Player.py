@@ -40,7 +40,8 @@ class Player():
         self.flower = list()
 
         # saw card temporary storage
-        self.saw_card = ""
+        self.see_card = ""
+        self.seen_cards = list()
         self.eat_combinations = []
         self.can_eat = False
         self.can_pon = False
@@ -72,15 +73,15 @@ class Player():
 
     @_action_decorator
     def pon(self, **kwargs):
-        self.flower += [self.saw_card]*3
+        self.flower += [self.see_card]*3
         for i in range(2):
-            self.holding.remove(self.saw_card)
+            self.holding.remove(self.see_card)
     
     @_action_decorator
     def gan(self, **kwargs):
-        self.flower += [self.saw_card]*4
+        self.flower += [self.see_card]*4
         for i in range(3):
-            self.holding.remove(self.saw_card)       
+            self.holding.remove(self.see_card)       
         self.amend_flower()
 
     @_action_decorator
@@ -114,7 +115,7 @@ class Player():
         if card:
             self.holding.append(card)
             self.tracker[card] -= 1
-            self.saw_card = card
+            self.see_card = card
             if announce:
                 print("draw", card)
             return card
@@ -123,7 +124,7 @@ class Player():
             if card:
                 self.holding.append(card)            
                 self.tracker[card] -= 1
-                self.saw_card = card
+                self.see_card = card
                 if announce:
                     print("draw", card)
                 return card
@@ -131,7 +132,11 @@ class Player():
                 return None
 
     @_sort
-    def suggest_ditch(self)->Tuple[Dict[str,int], str]:        
+    def suggest_ditch(self)->Tuple[Dict[str,int], str]:
+
+        card_ranks = dict()
+        for card in self.holding:
+            card_ranks[card] = 0
         
         possible_ditch = self.analyze_ditch_to_listen()[1]
         if len(possible_ditch) > 0:
@@ -143,34 +148,37 @@ class Player():
                 if waits >= most_waits:
                     ditch_card = card
                     most_waits = waits
-            return None, ditch_card
+            card_ranks[ditch_card] -= 50
 
-        ret = dict()
-        for card in self.holding:
-            ret[card] = -1
+        # for seen cards
+        for card in self.seen_cards:
+            if card in card_ranks.keys():
+                card_ranks[card] -= 3
+                if self.tracker[card] < 2:
+                    card_ranks[card] -= 4
 
         # for duplicated cards
         for card in self.holding:
-            ret[card]+=20
+            card_ranks[card]+=20
 
         # for numeric cards in sequence
         for card in self.holding:
             neighbor_cards = get_neighbor(card)
             if neighbor_cards:
                 for nei in neighbor_cards:
-                    if nei in ret.keys():
-                        ret[card] += 1
-                        ret[nei] += 1
+                    if nei in card_ranks.keys():
+                        card_ranks[card] += 1
+                        card_ranks[nei] += 1
 
         # recommend discard card
         discard_card = ""
-        lowest_score = 100
-        for k, v in ret.items():
-            if lowest_score >= v:
-                discard_card = k
-                lowest_score = v
+        lowest_score = 10000
+        for card, rank in card_ranks.items():
+            if lowest_score >= rank:
+                discard_card = card
+                lowest_score = rank
 
-        return ret, discard_card
+        return card_ranks, discard_card
 
     @_sort
     def amend_flower(self, *args, **kwargs):
@@ -214,7 +222,8 @@ class Player():
     def see(self, card:str, player=None, player_index:int=None)->List[List[str]]:
 
         self.__reset_action()
-        self.saw_card = card
+        self.see_card = card
+        self.seen_cards.append(card)
         self.tracker[card] -= 1
 
         # return in-take combination
@@ -291,7 +300,7 @@ class Player():
                 listen_cards = self.listen()
                 if listen_cards is None:
                     self.show()
-                    self.saw_card
+                    self.see_card
                     
                 if len(listen_cards) > 0:
                     ret_ = list()

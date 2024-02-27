@@ -11,16 +11,17 @@ class GameControl():
         self.players = list()
         self.deck = Deck()
         self.debug = debug
-        self.crrnt_id = 0 # range from 0-3        
+        self.crrnt_id = FourIndexBase()
         self.game_count = 0
         self.winds = Winds()        
         self._log = ""
         self.game_report = None
+        self.__is_full_round = False
         pass
 
     def register_a_player(self, player:Player):
         if len(self.players) < 4:            
-            self.players.append(player)
+            self.players.append(player)        
 
     def register_deck(self, deck:Deck):
         self.deck=deck
@@ -66,8 +67,40 @@ class GameControl():
         if self.game_report is None:
             self.game_report = GameReport(self.players)
         record = self.game_report.record(wind, dice, won_player, act_player)
-        self.log(record)        
+        self.log(record)
         return
+    
+    def __environment_update(self):
+        win = -1
+        for i in range(4):
+            player = self.players[i]
+            if player.is_win():
+                win = i
+        owner = self.crrnt_id.current_id()            
+                
+        if win == owner or win < 0:
+            self.players[owner].owner += 1
+            self.__is_full_round = False
+            return 
+        
+        else:
+            self.crrnt_id.next()
+            non_owner = [0,1,2,3]
+            non_owner.remove(self.crrnt_id.current_id())
+            for i in non_owner:
+                self.players[i].owner = -1
+            self.players[self.crrnt_id.current_id()].owner = 0
+
+            if self.crrnt_id.current_id() == 0:
+                self.winds.next()
+        
+        if self.winds.current() == "E" and self.crrnt_id.current_id() == 0:            
+            self.__is_full_round = True
+        else:
+            self.__is_full_round = False
+    
+    def is_full_round(self):
+        return self.__is_full_round
 
     def start(self, announce:bool=False):
         for player in self.players:
@@ -77,7 +110,7 @@ class GameControl():
         count = 0
         self.log("game start:", announce=announce)
         
-        players = Players(self.players, start_index=self.crrnt_id)        
+        players = Players(self.players, start_index=self.crrnt_id.current_id())        
 
         dice_point = self.deck.roll_dice()
         self.log("roll dice: " + str(dice_point), announce=announce)
@@ -106,6 +139,7 @@ class GameControl():
             card = player.draw_card()
             if card is None:
                 self.record(self.winds, dice_point, None, player)
+                self.__environment_update()
                 return count
             count += 1
 
@@ -120,6 +154,7 @@ class GameControl():
                 self.log("player index = "+ str(player.index) + ", win by self-draw",
                           player=player, announce=announce)
                 self.record(self.winds, dice_point, won_player=player, act_player=player)
+                self.__environment_update()
                 return count
             
             card = player.ditch()
@@ -133,6 +168,7 @@ class GameControl():
                     self.log("player index = "+ str(player.index) + ", win", player=player,
                              announce=announce)                    
                     self.record(self.winds, dice_point, won_player=player, act_player=act_player)
+                    self.__environment_update()
                     return count
 
             players.next()
@@ -143,17 +179,20 @@ class GameControl():
         
 
 if __name__ == "__main__":
-    game = GameControl(debug=True)
-    
-    game.register_deck(Deck())
+    game = GameControl(debug=True)    
 
     game.register_a_player(COMPlayer(is_owner=0, index=0))
     game.register_a_player(COMPlayer(is_owner=-1, index=1))
     game.register_a_player(COMPlayer(is_owner=-1, index=2))
     game.register_a_player(COMPlayer(is_owner=-1, index=3))
+    
+    while True:
+        game.register_deck(Deck())
+        game.start(announce=False)
+        print(game.game_report.records[-1])
+        if game.is_full_round():
+            break
 
-    game.start(announce=True)
 
-    print(game._log)
 
     

@@ -13,13 +13,13 @@ class PlayerRecords():
         return self.__wins
     
     def get_lose(self):
-        return self.__wins
+        return self.__lose
 
     def get_self_draw(self):
-        return self.__wins
+        return self.__self_draw
     
     def get_tais(self):
-        return self.__wins
+        return self.__tais
 
     
     def get_index(self, player:Player)->int:
@@ -53,18 +53,20 @@ class GameReport():
         self.dice = list()        
         self.player_records = PlayerRecords(players) 
         self.players = players
+        self.records = list()
 
     def find_owner_id(self, players:Players)->Tuple[int, int]:
         for player in players:
             if player.is_owner() >= 0:
-                return player.index, player.is_owner()
+                return player, player.is_owner()
                                
     def record(self, wind:Winds, dice:int, won_player, act_player):
         ret = ""
         self.wind.append(wind.current())
         ret += "\ncurrent wind: " + wind.current()
-        owner_index, owner = self.find_owner_id(self.players)
-        ret += "\nowner: " + str(owner_index) + ", streak: " + str(owner)
+        owner_player, owner = self.find_owner_id(self.players)
+                
+        ret += "\nowner: " + str(owner_player.index) + ", streak: " + str(owner)
         self.dice.append(dice)
         ret += "\ndice rolled: " + str(dice)
 
@@ -82,6 +84,8 @@ class GameReport():
 
         ret += "\n" + self.player_records.to_string()
         ret+="\n"
+
+        self.records.append(ret)
         return ret
 
 

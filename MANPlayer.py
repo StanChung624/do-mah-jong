@@ -24,7 +24,7 @@ class MANPlayer(Player):
             opt+=1
         if(self.can_win):
             msg += str(opt) + " win\n"
-            self.holding.append(self.saw_card)            
+            self.holding.append(self.see_card)            
             actions.append(self.show)
             opt+=1
 
