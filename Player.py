@@ -8,6 +8,22 @@ class Player():
         
         self.deck = deck
 
+        self.__set_initial_condition()
+        # load holding
+        if holding:
+            self.holding = holding
+            for card in holding:
+                self.tracker[card]-=1
+        else:
+            self.holding = list()
+
+        # owner of the game
+        self.owner = is_owner
+
+        # playing sequence
+        self.index = index
+
+    def __set_initial_condition(self):
         # card tracker by player
         self.tracker = dict()
 
@@ -18,22 +34,10 @@ class Player():
             self.tracker['x'+str(i+1)] = 4
             self.tracker['X'+str(i+1)] = 4
 
+        #holding
+        self.holding = list()
         # flower
         self.flower = list()
-
-        # load holding
-        if holding:
-            self.holding = holding
-            for card in holding:
-                self.tracker[card]-=1
-        else:
-            self.holding = list()
-
-        # owner of the game
-        self.is_owner = is_owner
-
-        # playing sequence
-        self.index = index
 
         # saw card temporary storage
         self.saw_card = ""
@@ -43,8 +47,8 @@ class Player():
         self.can_gan = False
         self.can_win = False
 
-    def reset(self, holding:list=None, is_owner:int=-1, deck:Deck=None) -> None:
-        self.__init__(holding, is_owner, self.index, deck)
+    def reset(self) -> None:
+        self.__set_initial_condition()        
 
     def _sort(action):
         def wrapper(self, *args, **kwargs):            
@@ -98,10 +102,10 @@ class Player():
         self.can_win = False
     
     def is_owner(self)->int:
-        return self.is_owner    
+        return self.owner    
     
     def set_is_owner(self, owner_index:int)->None:
-        self.is_owner = owner_index
+        self.owner = owner_index
 
     @_sort
     def draw_card(self, *args, **kwargs):
@@ -209,6 +213,7 @@ class Player():
     
     @_sort
     def see(self, card:str, player=None, player_index:int=None)->List[List[str]]:
+
         self.__reset_action()
         self.saw_card = card
         self.tracker[card] -= 1

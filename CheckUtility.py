@@ -150,6 +150,6 @@ def is_win(holding):
 
 if __name__ == "__main__":        
 
-    test = ['o2', 'o3', 'l3', 'l3', 'l3', 'm5', 'm7', 'm6', 'Fa', 'Fa', 'S', 'S', 'S', 'W', 'W', 'W', 'o1']
+    test = ['l1', 'l1', 'l3', 'l4', 'l5']
 
     print(is_win(test))

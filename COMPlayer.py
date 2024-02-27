@@ -54,7 +54,9 @@ class COMPlayer(Player):
         return best_formation
 
     
-    def ditch(self):        
+    def ditch(self):
+        if self.is_win():
+            raise "no ditch"
         card = self.suggest_ditch()[1]
         if not card:        
             card = self.holding[0]
