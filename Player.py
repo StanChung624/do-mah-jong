@@ -80,8 +80,7 @@ class Player():
     def gan(self, **kwargs):
         self.flower += [self.saw_card]*4
         for i in range(3):
-            self.holding.remove(self.saw_card)
-        print("amend :", self.draw_card())
+            self.holding.remove(self.saw_card)       
         self.amend_flower()
 
     @_action_decorator
@@ -183,7 +182,7 @@ class Player():
             if 'x' in card or 'X' in card:
                 self.holding.pop(self.holding.index(card))
                 self.flower.append(card)
-                self.draw_card(deck)
+                self.draw_card(deck)                
 
     @_sort
     def is_win(self):

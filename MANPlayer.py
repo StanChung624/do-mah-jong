@@ -3,7 +3,7 @@ from Player import Player
 class MANPlayer(Player):
 
     def draw_card(self, *args, **kwargs):
-        kwargs.setdefault("announce", True)
+        kwargs.setdefault("announce")
         return super().draw_card(*args, **kwargs)
 
     def __action_interface(self)->bool:

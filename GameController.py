@@ -25,9 +25,9 @@ class GameControl():
     def register_deck(self, deck:Deck):
         self.deck=deck
 
-    def __others_self_check(self, card, players:Players):
+    def __others_self_check(self, card, players:Players, announce:bool=False):
         """
-            return the last action player's id.
+            return the players and last action player
         """
 
         others  = players.others()
@@ -40,43 +40,48 @@ class GameControl():
             action = other.action()
             if action:
                 if other.is_win():
-                    return players                
+                    return players, players.current()
+                
                 players.reset(other)
 
-                self.log("player index = "+ str(other.index) + ", " + action)
+                self.log("player index = "+ str(other.index) + ", " + action,
+                          announce=announce)
                 card = other.ditch()
-                self.log("player index = "+ str(other.index) + ", ditch: "+ card )
-                return self.__others_self_check(card, players)
+                self.log("player index = "+ str(other.index) + ", ditch: "+ card,
+                          announce=announce)
+                return self.__others_self_check(card, players, announce=announce)
                 
-        return players
+        return players, players.current()
     
-    def log(self, message:str, player:Player=None, end:str="\n"):
+    def log(self, message:str, player:Player=None, end:str="\n", announce:bool=False):
         new_message = message + end        
         if player:
             new_message += player.show(announce=False) + end
         self._log += new_message
+        if announce:
+            print(new_message)
 
     
-    def record(self, wind:Winds, dice:int, players:Players):
+    def record(self, wind:Winds, dice:int, won_player:Player, act_player:Player):
         if self.game_report is None:
-            self.game_report = GameReport(self.players)        
-        record = self.game_report.record(wind, dice, players)
+            self.game_report = GameReport(self.players)
+        record = self.game_report.record(wind, dice, won_player, act_player)
         self.log(record)
         print(record)
         return
 
-    def start(self):
+    def start(self, announce:bool=False):
         for player in self.players:
             player.reset()        
             player.deck = self.deck
 
         count = 0
-        self.log("game start:")        
+        self.log("game start:", announce=announce)
         
         players = Players(self.players, start_index=self.crrnt_id)        
 
         dice_point = self.deck.roll_dice()
-        self.log("roll dice: " + str(dice_point))
+        self.log("roll dice: " + str(dice_point), announce=announce)
 
         #deal cards
         for grab_i in range(4):
@@ -101,11 +106,11 @@ class GameControl():
 
             card = player.draw_card()
             if card is None:
-                self.record(self.winds, dice_point, players)
+                self.record(self.winds, dice_point, None, player)
                 return
             count += 1
 
-            self.log("card drawn count = " + str(count))
+            self.log("card drawn count = " + str(count), announce=announce)
             self.log("player index = " + str(player.index) + ", draw: " + card)
 
             player.amend_flower()
@@ -113,20 +118,22 @@ class GameControl():
             self.log("", player=player)
 
             if player.is_win():
-                self.log("player index = "+ str(player.index) + ", win by self-draw", player=player)
-                self.record(self.winds, dice_point, players)
+                self.log("player index = "+ str(player.index) + ", win by self-draw",
+                          player=player, announce=announce)
+                self.record(self.winds, dice_point, won_player=player, act_player=player)
                 return
             
             card = player.ditch()
 
-            self.log("player index = "+ str(player.index) + ", ditch: " + card)
+            self.log("player index = "+ str(player.index) + ", ditch: " + card,
+                      announce=announce)
 
-            players = self.__others_self_check(card, players)
-            player = players.current()
+            players, act_player = self.__others_self_check(card, players, announce=announce)            
             for player in players:
                 if player.is_win():
-                    self.log("player index = "+ str(player.index) + ", win", player=player)
-                    self.record(self.winds, dice_point, players)
+                    self.log("player index = "+ str(player.index) + ", win", player=player,
+                             announce=announce)                    
+                    self.record(self.winds, dice_point, won_player=player, act_player=act_player)
                     return
 
             players.next()
@@ -146,7 +153,8 @@ if __name__ == "__main__":
     game.register_a_player(COMPlayer(is_owner=-1, index=2))
     game.register_a_player(COMPlayer(is_owner=-1, index=3))
 
-    game.start()
+    game.start(announce=True)
 
+    print(game._log)
 
     

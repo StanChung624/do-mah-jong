@@ -39,27 +39,22 @@ class GameReport():
         self.wind = list()
         self.dice = list()        
         self.player_records = PlayerRecords(players) 
+        self.players = players
 
     def find_owner_id(self, players:Players)->Tuple[int, int]:
         for player in players:
             if player.is_owner() >= 0:
                 return player.index, player.is_owner()
                                
-    def record(self, wind:Winds, dice:int, players:Players):
+    def record(self, wind:Winds, dice:int, won_player, act_player):
         ret = ""
         self.wind.append(wind.current())
         ret += "\ncurrent wind: " + wind.current()
-        owner_index, owner = self.find_owner_id(players)
+        owner_index, owner = self.find_owner_id(self.players)
         ret += "\nowner: " + str(owner_index) + ", streak: " + str(owner)
         self.dice.append(dice)
         ret += "\ndice rolled: " + str(dice)
 
-        won_player = None
-        act_player = players.current()        
-        for player in players:
-            if player.is_win():
-                won_player = player
-                break
         if won_player is None:
             ret += "\nno one won.\n"            
         else:

@@ -56,12 +56,7 @@ class Players(FourIndexBase):
         return self.players[self.index]
     
     def reset(self, player:Player):
-        new_index = 0
-        for self_player in self.players:
-            if self_player.index == player.index:
-                self.index = new_index
-                return
-            new_index += 1
+        self.index = self.players.index(player)
     
     def others(self, index:int=None)->List[Player]:
         if index is None:
@@ -69,5 +64,25 @@ class Players(FourIndexBase):
         ret = list()
         for i in FourIndexBase(self.index):
             ret.append(self.players[i])
-        ret.pop(-1)
+        ret.pop(0)
         return ret
+    
+from COMPlayer import COMPlayer
+if __name__ == "__main__":
+    players = Players([COMPlayer(index=0),COMPlayer(index=1),COMPlayer(index=2),COMPlayer(index=3)])    
+
+    print(players.current().index == 0)
+    players.next()
+    players.next()
+    print(players.current().index == 2)
+    players.next()
+    players.next()
+    players.next()
+    print(players.current().index == 1)
+
+    others = players.others()
+    answers = [2,3,0]
+    ans_i = 0
+    for player in others:
+        print(player.index == answers[ans_i])
+        ans_i += 1
