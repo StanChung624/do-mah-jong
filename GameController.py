@@ -66,8 +66,7 @@ class GameControl():
         if self.game_report is None:
             self.game_report = GameReport(self.players)
         record = self.game_report.record(wind, dice, won_player, act_player)
-        self.log(record)
-        print(record)
+        self.log(record)        
         return
 
     def start(self, announce:bool=False):
@@ -107,7 +106,7 @@ class GameControl():
             card = player.draw_card()
             if card is None:
                 self.record(self.winds, dice_point, None, player)
-                return
+                return count
             count += 1
 
             self.log("card drawn count = " + str(count), announce=announce)
@@ -121,7 +120,7 @@ class GameControl():
                 self.log("player index = "+ str(player.index) + ", win by self-draw",
                           player=player, announce=announce)
                 self.record(self.winds, dice_point, won_player=player, act_player=player)
-                return
+                return count
             
             card = player.ditch()
 
@@ -134,7 +133,7 @@ class GameControl():
                     self.log("player index = "+ str(player.index) + ", win", player=player,
                              announce=announce)                    
                     self.record(self.winds, dice_point, won_player=player, act_player=act_player)
-                    return
+                    return count
 
             players.next()
 

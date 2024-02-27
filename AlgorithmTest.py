@@ -1,98 +1,41 @@
-from COMPlayer import *
+from COMPlayer import COMPlayer
+from GameController import GameControl, Deck
 from multiprocessing import Pool
 
 
-def run_auto_game(score_board:list=None)->int:
-    """
-    if the game is out of deck or not.
-    """
-    deck = Deck()
+def run_auto_game():
+    game = GameControl()
+    game.register_a_player(player=COMPlayer(is_owner=0, index=0))
+    game.register_a_player(player=COMPlayer(is_owner=-1, index=1))
+    game.register_a_player(player=COMPlayer(is_owner=-1, index=2))
+    game.register_a_player(player=COMPlayer(is_owner=-1, index=3))
+    game.register_deck(Deck())
 
-    players = [COMPlayer(index=0, is_owner= 0, deck=deck),\
-            COMPlayer(index=1, is_owner=-1, deck=deck),\
-            COMPlayer(index=2, is_owner=-1, deck=deck),\
-            COMPlayer(index=3, is_owner=-1, deck=deck)]
-
-    for i in range(4):
-        for id in range(4):        
-            for j in range(4):
-                players[id].draw_card() 
-
-
-    # amend flower
-    for i in range(4):
-        players[i].amend_flower()
-
-    id = 0
-    round = 0
-
-    to_stop = False
-    while not to_stop:
-        if id ==0:
-            round += 1
-        if not players[id].draw_card(announce=False):
-            # print("no body win..")
-            to_stop = True            
-            return round
-            break
-
-        players[id].amend_flower()
-
-        if players[id].is_win():
-            is_stop = True
-            if score_board:
-                score_board[id] += 1
-            # print("win!")
-            # players[id].show()
-            return round
-            break
-
-        card = players[id].ditch()
-        def others_check(card, current_player_id)->Tuple[int, bool]:
-                """
-                return next player's id and if someone has won
-                """
-                # print("player", current_player_id, "ditch", card)
-                other_ids = [0,1,2,3]
-                other_ids.remove(current_player_id)
-
-                for other in other_ids:
-                    players[other].see(card=card, player=players[current_player_id])
-                
-                other_ids.reverse()
-                for other in other_ids:
-                    if players[other].action(announce=False):
-                        # print("Player", other)
-
-                        if players[other].is_win():
-                            # print("win!")                            
-                            return other, True
-                        
-                        current_player_id = other
-                        return others_check(players[other].ditch(), current_player_id)
-                        
-                return current_player_id, False
-
-        id, to_stop = others_check(card, id)    
-        if to_stop:
-            score_board[id] += 1
-            return round
-            
-        id += 1
-        id %= 4
+    count = game.start()    
+    score_board = game.game_report.player_records.get_wins()
+    return count, score_board
 
 def task(total_game):
-    score_board=[0,0,0,0]
+    score_board = [0,0,0,0]
+
+    def accum(input_list):
+        for i in range(4):
+            score_board[i] += input_list[i]
+    
     avg_round = 0
     for i in range(total_game):
-        avg_round += run_auto_game(score_board=score_board) / total_game
-            
+        round, wins = run_auto_game()
+        accum(wins)
+        avg_round += round
+
+    avg_round /= total_game
+
     return score_board, avg_round
 
 if __name__ == "__main__":
 
-    total_game_num = 1000
-    processor_num = 10
+    total_game_num = 40
+    processor_num = 4
     process_game_num = int(total_game_num/processor_num)
 
     pool = Pool(processor_num)

@@ -9,6 +9,19 @@ class PlayerRecords():
         self.__tais = [0,0,0,0]
         return
     
+    def get_wins(self):
+        return self.__wins
+    
+    def get_lose(self):
+        return self.__wins
+
+    def get_self_draw(self):
+        return self.__wins
+    
+    def get_tais(self):
+        return self.__wins
+
+    
     def get_index(self, player:Player)->int:
         return self.__players.index(player.index)
 
