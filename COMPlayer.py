@@ -1,9 +1,26 @@
-from typing import List
+from typing import Dict, List
+from CheckUtility import Dict
 from Deck import Deck
 from Player import Player
 from CheckUtility import *
+from COMThoughts import NoBrainWin, COMThoughtsBase
 
 class COMPlayer(Player):    
+
+    def __init__(self, 
+                 strategy:COMThoughtsBase = None,
+                 holding: List[str] = None, 
+                 is_owner: int = -1, 
+                 index: int = 0, 
+                 deck: Deck = None, 
+                 seen_cards: Dict[int, List[str]] = None) -> None:
+        if strategy is None:
+            self.strategy = NoBrainWin
+        else:
+            self.strategy = strategy
+
+        super().__init__(holding, is_owner, index, deck, seen_cards)
+
     def action(self, **kwargs)->bool:
         announce = kwargs.setdefault("announce", False)
         if self.can_win:
@@ -32,39 +49,74 @@ class COMPlayer(Player):
         if len(formations)==1:
             return formations[0]
 
-        best_tri_count = 0
-        best_formation = list()
+        best_in_count = 0
+        best_formation = formations[0]
         for formation in formations:
 
             holdings = self.holding + [self.see_card]
 
+            holdings.sort()
+
             for card in formation:
                 holdings.remove(card)
 
-            no_txt = check_txt(holdings)[0]
-            tri_count = 0
-            no_use, tri_count = check_id(no_txt, "o", tri_count)
-            no_use, tri_count = check_id(no_txt, "m", tri_count)
-            no_use, tri_count = check_id(no_txt, "l", tri_count)
+            in_count = len(listen(holdings, True))
 
-            if tri_count >= best_tri_count:
-                best_tri_count = tri_count
+            if in_count > best_in_count:
+                best_in_count = in_count
                 best_formation = formation
 
         return best_formation
 
+
+    @Player._sort
+    def analyze_ditch_to_listen(self)->Dict[str,List[Dict[str,int]]]:        
+        ret = dict()
+        efficiency = dict()
+
+        tmp_holding = list(self.holding)            
+        for card in tmp_holding:               
+            self.holding.remove(card)
+            listen_cards = self.listen()
+            if listen_cards is None:
+                self.show()
+                self.see_card
+                
+            if len(listen_cards) > 0:
+                ret_ = list()
+                waits = 0
+                for lis in listen_cards:
+                    ret_.append({lis:self.tracker[lis]})
+                    waits += self.tracker[lis]
+                ret[card] = ret_
+                efficiency[card] = waits
+
+            self.holding.append(card)
+
+        return ret, efficiency
+    
+    @Player._sort
+    def suggest_ditch(self)->Tuple[Dict[str,int], str]:
+        thoughts = self.strategy(self)
+        return thoughts.best_ditch()
     
     def ditch(self):
         if self.is_win():
             raise "no ditch"
-        card = self.suggest_ditch()[1]
+        card = self.suggest_ditch()
         if not card:        
             card = self.holding[0]
         return self.discard_card(card=card)
 
 if __name__ == "__main__":
-    com = COMPlayer()
-    test = ['l1', 'l2', 'l3', 'm5', 'm5', 'm6', 'm7']
+    com = COMPlayer(deck=Deck())
+    
+    test = ['l1', 'l2', 'l3', 'l4', 'l5']
     for card in test:
         com.draw_card(card=card)
-    print(com.listen())
+
+    com.see("l3", player_index=1)
+
+    print(com.eat_combinations)
+
+    print(com.eat_formation_advisor())

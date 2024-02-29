@@ -59,6 +59,11 @@ class Deck():
         self.deck_tracker[self.seq[0]] -= 1        
         return self.seq.pop(0)
 
+def is_text(card:str):
+    if card in Deck.t_list:
+        return True
+    else:
+        return False
 
 if (__name__=="__main__"):
     deck = Deck()

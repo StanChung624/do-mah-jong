@@ -4,9 +4,17 @@ from typing import Dict
 from abc import ABC, abstractmethod
 
 class Player():
-    def __init__(self, holding:list=None, is_owner:int=-1, index:int=0, deck:Deck=None) -> None:
+    def __init__(self,
+                 holding:List[str]=None, 
+                 is_owner:int=-1,
+                 index:int=0, 
+                 deck:Deck=None, 
+                 seen_cards:Dict[int, List[str]]=None) -> None:
         
         self.deck = deck
+
+        # playing sequence
+        self.index = index
 
         self.__set_initial_condition()
         # load holding
@@ -19,9 +27,6 @@ class Player():
 
         # owner of the game
         self.owner = is_owner
-
-        # playing sequence
-        self.index = index
 
     def __set_initial_condition(self):
         # card tracker by player
@@ -41,15 +46,29 @@ class Player():
 
         # saw card temporary storage
         self.see_card = ""
-        self.seen_cards = list()
+        self.seen_cards = self.__set_seen_cards()
+        
         self.eat_combinations = []
         self.can_eat = False
         self.can_pon = False
         self.can_gan = False
         self.can_win = False
 
+    def __set_seen_cards(self)->Dict[int, Dict[str,int]]:
+        ret = dict()
+        other_players = [0,1,2,3]
+        other_players.remove(self.index)
+        
+        counter_dict = dict()
+        for card in Deck.unique_card:
+            counter_dict[card] = 0
+
+        for i in other_players:
+            ret.setdefault(i, dict(counter_dict))
+        return ret
+
     def reset(self) -> None:
-        self.__set_initial_condition()        
+        self.__set_initial_condition()
 
     def _sort(action):
         def wrapper(self, *args, **kwargs):            
@@ -132,69 +151,29 @@ class Player():
                 return None
 
     @_sort
-    def suggest_ditch(self)->Tuple[Dict[str,int], str]:
-
-        card_ranks = dict()
-        for card in self.holding:
-            card_ranks[card] = 0
-        
-        possible_ditch = self.analyze_ditch_to_listen()[1]
-        if len(possible_ditch) > 0:
-            # print("use analysis result")
-            # get best option from analysis            
-            most_waits = 0
-            ditch_card = ""
-            for card, waits in possible_ditch.items():                
-                if waits >= most_waits:
-                    ditch_card = card
-                    most_waits = waits
-            card_ranks[ditch_card] -= 50
-
-        # for seen cards
-        for card in self.seen_cards:
-            if card in card_ranks.keys():
-                card_ranks[card] -= 3
-                if self.tracker[card] < 2:
-                    card_ranks[card] -= 4
-
-        # for duplicated cards
-        for card in self.holding:
-            card_ranks[card]+=20
-
-        # for numeric cards in sequence
-        for card in self.holding:
-            neighbor_cards = get_neighbor(card)
-            if neighbor_cards:
-                for nei in neighbor_cards:
-                    if nei in card_ranks.keys():
-                        card_ranks[card] += 1
-                        card_ranks[nei] += 1
-
-        # recommend discard card
-        discard_card = ""
-        lowest_score = 10000
-        for card, rank in card_ranks.items():
-            if lowest_score >= rank:
-                discard_card = card
-                lowest_score = rank
-
-        return card_ranks, discard_card
-
-    @_sort
     def amend_flower(self, *args, **kwargs):
         deck = kwargs.setdefault("deck", self.deck)
         if not deck:
             print("[err] No card amended, for deck is not specified.")
-        
+
+        f_card = ""
         for card in self.holding:            
             if 'x' in card or 'X' in card:
-                self.holding.pop(self.holding.index(card))
-                self.flower.append(card)
-                self.draw_card(deck)                
+                f_card = card
+                break
+
+        if f_card == "":
+            return 
+        else:
+            self.flower.append(f_card)
+            self.holding.remove(f_card)
+            self.draw_card(deck=deck)
+            return self.amend_flower()
+        
 
     @_sort
-    def is_win(self):
-        return is_win(self.holding)
+    def is_win(self, ignore_pair:bool=False):
+        return is_win(self.holding, ignore_pair)
     
     @_sort
     def show(self, announce:bool=True):
@@ -222,19 +201,19 @@ class Player():
     def see(self, card:str, player=None, player_index:int=None)->List[List[str]]:
 
         self.__reset_action()
-        self.see_card = card
-        self.seen_cards.append(card)
-        self.tracker[card] -= 1
-
-        # return in-take combination
-        ret = []
-
+        
         is_upstream_player = True
-
         if player:
             player_index = player.index
         if player_index is not None:
             is_upstream_player = (self.index + 3) % 4 == player_index
+
+        self.see_card = card
+        self.seen_cards[player_index][card] += 1
+        self.tracker[card] -= 1
+
+        # return in-take combination
+        ret = []
         
         if card in self.holding:
             card_sum = dict()
@@ -272,45 +251,10 @@ class Player():
 
     @_sort
     def listen(self):
-        if self.is_win():
-            return None
-        ret = list()
-        for card in Deck.unique_card:
-            self.holding.append(card)
-            if(self.is_win()):
-                ret.append(card)
-            self.holding.remove(card)
-        return ret
+        return listen(self.holding)
     
     @abstractmethod
     def action(self, **kwargs)->bool:
         return None
 
-    @_sort
-    def analyze_ditch_to_listen(self)->Dict[str,List[Dict[str,int]]]:        
-        if self.is_win():
-            return 
-        else:
-            ret = dict()
-            efficiency = dict()
-
-            tmp_holding = list(self.holding)            
-            for card in tmp_holding:               
-                self.holding.remove(card)
-                listen_cards = self.listen()
-                if listen_cards is None:
-                    self.show()
-                    self.see_card
-                    
-                if len(listen_cards) > 0:
-                    ret_ = list()
-                    waits = 0
-                    for lis in listen_cards:
-                        ret_.append({lis:self.tracker[lis]})
-                        waits += self.tracker[lis]
-                    ret[card] = ret_
-                    efficiency[card] = waits
-
-                self.holding.append(card)
-
-            return ret, efficiency
+    

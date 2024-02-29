@@ -1,4 +1,4 @@
-from Player import Player
+from COMPlayer import COMPlayer
 from test.TestLineTransmitter import *
 
 def line_transmitter(in_string):
@@ -47,7 +47,7 @@ def line_transmitter(in_string):
             
         # 胡牌 mode
         else:
-            player = Player(holding=tiles)
+            player = COMPlayer(holding=tiles)
             if player.is_win():
                 return "胡啦!!"
             analysis = player.analyze_ditch_to_listen()[0]
@@ -75,7 +75,7 @@ def line_transmitter(in_string):
             
 
 def get_listen_tiles(holdings):
-    player = Player()
+    player = COMPlayer()
     player.holding = holdings 
     return player.listen()
 

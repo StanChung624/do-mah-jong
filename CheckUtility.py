@@ -104,6 +104,7 @@ def check_id(no_pair_n_txt:list, target:str, tri_count:int = 0):
             return pure_num
     
     pure_num = get_pure_num(no_pair_n_txt, target)
+
     if len(pure_num) % 3 != 0:
         return False, tri_count
     
@@ -118,12 +119,15 @@ def check_id(no_pair_n_txt:list, target:str, tri_count:int = 0):
         
     return True, tri_count
 
-def is_win(holding):
+def is_win(holding, ignore_pair:bool=False):
+        
         combinations = comb_remove_pair(holding)
 
-        if (len(combinations)==0):
+        if (len(combinations)==0) and not ignore_pair:
             # no pair
             return False
+        else:
+            combinations.append(holding+['dummy', 'dummy'])
         
         for comb in combinations:
             
@@ -148,8 +152,19 @@ def is_win(holding):
         
         return False
 
+def listen(holding:List[str], ignore_pair:bool=False)->List[str]:
+    ret = list()
+    for card in Deck.unique_card:
+        holding.append(card)
+        if is_win(holding, ignore_pair):
+            ret.append(card)
+        holding.remove(card)        
+    return ret
+
+
+
 if __name__ == "__main__":        
 
-    test = ['l1', 'l1', 'l3', 'l4', 'l5']
+    test = ['l1', 'l2', 'l3', 'l4', 'l5', 'l6']
 
-    print(is_win(test))
+    print(is_win(test, ignore_pair=True))
