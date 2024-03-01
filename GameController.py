@@ -21,7 +21,9 @@ class GameControl():
 
     def register_a_player(self, player:Player):
         if len(self.players) < 4:            
-            self.players.append(player)        
+            self.players.append(player)
+        if len(self.players) == 4:
+            self.players = sorted(self.players, key=lambda each : each.index)
 
     def register_deck(self, deck:Deck):
         self.deck=deck

@@ -53,6 +53,7 @@ class Player():
         self.can_pon = False
         self.can_gan = False
         self.can_win = False
+        self.__is_win = None
 
     def __set_seen_cards(self)->Dict[int, Dict[str,int]]:
         ret = dict()
@@ -119,6 +120,7 @@ class Player():
         self.can_pon = False
         self.can_gan = False
         self.can_win = False
+        self.__is_win = None
     
     def is_owner(self)->int:
         return self.owner    
@@ -173,7 +175,9 @@ class Player():
 
     @_sort
     def is_win(self, ignore_pair:bool=False):
-        return is_win(self.holding, ignore_pair)
+        if self.__is_win is None:
+            self.__is_win = is_win(self.holding)
+        return self.__is_win
     
     @_sort
     def show(self, announce:bool=True):
@@ -252,6 +256,11 @@ class Player():
     @_sort
     def listen(self):
         return listen(self.holding)
+    
+    def is_listen(self):
+        if self.__is_win:
+            return True
+        return len(self.listen()) > 0
     
     @abstractmethod
     def action(self, **kwargs)->bool:

@@ -77,7 +77,7 @@ class COMThoughtsBase():
             if count > 1:
                 self.grades[card] += point
 
-    def base_down_stream_player_palyed_cards(self, point:int):
+    def base_down_stream_player_played_cards(self, point:int):
         down_stream_index = (self.index + 1) % 4
         for card in self.count.keys():
             card_played_times = self.seen_cards[down_stream_index][card]            
@@ -98,17 +98,36 @@ class COMThoughtsBase():
                 self.grades[card] += tracker[card] * (-point)
 
 
+    def base_discarded_series_cards(self, point:int):
+        def get_series_cards(card:str):
+            if is_text(card):
+                return list()
+            else:
+                typ = card[0]
+                num = int(card[1])
+                nums = [num, num+3, num+6]
+                ret = []
+                for i in nums:
+                    if i > 10:
+                        i -= 9
+                    ret.append(typ+str(i))
+                return ret
+        for _, tracker in self.seen_cards.items():
+            for card, count in tracker.items():
+                for crd in get_series_cards(card):
+                    if crd in self.grades.keys():
+                        self.grades[crd] += (-point)*count
+
+
     
 if __name__ == "__main__":
     deck = ['l1', 'l2', 'l3', 'm5', 'm5', 'm6', 'm7', 'N', 'm9']
     player = Player(holding=deck)
 
-    player.see("l2", player_index=1)
-    player.see("l2", player_index=1)
-    player.see("l4", player_index=1)
-
+    player.see("m2", player_index=1)
+    
     thought = COMThoughtsBase(player)
     
-    thought.base_discarded_cards(5)
+    thought.base_discarded_series_cards(5)
 
-    print(thought.best_ditch())
+    print(thought.grades)

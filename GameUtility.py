@@ -7,6 +7,7 @@ class PlayerRecords():
         self.__lose = [0,0,0,0]
         self.__self_draw = [0,0,0,0]
         self.__tais = [0,0,0,0]
+        self.__listen = [0,0,0,0]
         return
     
     def get_wins(self):
@@ -21,6 +22,8 @@ class PlayerRecords():
     def get_tais(self):
         return self.__tais
 
+    def get_listen(self):
+        return self.__listen
     
     def get_index(self, player:Player)->int:
         return self.__players.index(player.index)
@@ -33,6 +36,9 @@ class PlayerRecords():
 
     def add_self_draw(self, player:Player):
         self.__self_draw[self.get_index(player)] += 1
+
+    def add_listen(self, player:Player):
+        self.__listen[self.get_index(player)] += 1
 
     def add_tais(self, player:Player, tai:int):
         self.__tais[self.get_index(player)] += tai
@@ -81,6 +87,12 @@ class GameReport():
                 ret += "\nwinner: " + str(won_player.index) + ", loser: " + str(act_player.index)
                 self.player_records.add_wins(won_player)
                 self.player_records.add_lose(act_player)
+
+        for player in self.players:
+            if player.is_win():
+                self.player_records.add_listen(player)
+            elif player.is_listen():
+                self.player_records.add_listen(player)
 
         ret += "\n" + self.player_records.to_string()
         ret+="\n"
