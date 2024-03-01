@@ -1,7 +1,7 @@
 from tqdm import tqdm
-from Deck import Deck
-from Player import Player
-from CheckUtility import *
+from do_mah_jong.Basic.Deck import Deck
+from do_mah_jong.Basic.Player import Player
+from do_mah_jong.Basic.CheckUtility import *
 
 class Expert():
     rules = dict(PongPong = 4,

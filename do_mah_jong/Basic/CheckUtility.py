@@ -1,4 +1,4 @@
-from Deck import Deck
+from do_mah_jong.Basic.Deck import Deck
 from typing import Dict, List, Tuple
 
 def comb_remove_pair(holding:List[str])->List[List[str]]:

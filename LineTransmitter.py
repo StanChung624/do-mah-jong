@@ -1,4 +1,4 @@
-from COMPlayer import COMPlayer
+from do_mah_jong.Basic.COMPlayer import COMPlayer
 from test.TestLineTransmitter import *
 
 def line_transmitter(in_string):

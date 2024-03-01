@@ -1,5 +1,5 @@
-from GameController import *
-from COMThoughts import *
+from do_mah_jong.Basic import *
+from do_mah_jong.COMStyle.PoPo import PoPo
 
 game = GameControl()
 

@@ -1,4 +1,4 @@
-from Basics import *
+from do_mah_jong.Basic.RecursiveDef import *
 
 class PlayerRecords():
     def __init__(self, players:Players)->None:        

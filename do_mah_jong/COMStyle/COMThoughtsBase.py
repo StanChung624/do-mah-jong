@@ -1,7 +1,7 @@
 from typing import List, Dict
-from Deck import Deck, is_text
-from Player import Player
-from CheckUtility import listen, get_neighbor
+from do_mah_jong.Basic.Deck import Deck, is_text
+from do_mah_jong.Basic.Player import Player
+from do_mah_jong.Basic.CheckUtility import listen, get_neighbor
 
 class COMThoughtsBase():
     def __init__(self, player:Player)->None:

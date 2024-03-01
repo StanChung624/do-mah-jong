@@ -1,10 +1,10 @@
 
-from Deck import Deck
-from Player import Player
-from COMPlayer import COMPlayer
-from MANPlayer import MANPlayer
-from Basics import *
-from GameUtility import *
+from do_mah_jong.Basic.Deck import Deck
+from do_mah_jong.Basic.Player import Player
+from do_mah_jong.Basic.RecursiveDef import *
+from .COMPlayer import COMPlayer
+from .MANPlayer import MANPlayer
+from .GameUtility import *
 
 class GameControl():
     def __init__(self, debug:bool=False) -> None:

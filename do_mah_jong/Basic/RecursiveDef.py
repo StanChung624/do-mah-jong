@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from Player import Player
+from do_mah_jong.Basic.Player import Player
 
 class FourIndexBase():
     def __init__(self, start_index:int=0):
@@ -66,10 +66,9 @@ class Players(FourIndexBase):
             ret.append(self.players[i])
         ret.pop(0)
         return ret
-    
-from COMPlayer import COMPlayer
+
 if __name__ == "__main__":
-    players = Players([COMPlayer(index=0),COMPlayer(index=1),COMPlayer(index=2),COMPlayer(index=3)])    
+    players = Players([Player(index=0),Player(index=1),Player(index=2),Player(index=3)])    
 
     print(players.current().index == 0)
     players.next()

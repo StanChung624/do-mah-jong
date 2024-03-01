@@ -1,4 +1,4 @@
-from Player import Player
+from do_mah_jong.Basic.Player import Player
 from .COMThoughtsBase import COMThoughtsBase
 
 class NoBrainWin(COMThoughtsBase):

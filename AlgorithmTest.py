@@ -1,6 +1,5 @@
-from COMPlayer import COMPlayer
-from COMThoughts import *
-from GameController import GameControl, Deck
+from do_mah_jong.Basic import *
+from do_mah_jong.COMStyle.PoPo import PoPo
 from multiprocessing import Pool
 
 
@@ -45,7 +44,7 @@ def task(total_game):
 
 if __name__ == "__main__":
 
-    total_game_num = 1024
+    total_game_num = 640
     processor_num = 16
     process_game_num = int(total_game_num/processor_num)
 
@@ -82,6 +81,6 @@ if __name__ == "__main__":
         print("\twon      ", win_board[i], "games, with win rate \t", win_board[i]/total_game_num * 100, "%")
         print("\tlose     ", lose_board[i], "games, with lose rate \t", lose_board[i]/total_game_num * 100, "%")
         print("\tself-draw", self_draw_board[i], "games, with s-draw rate \t", self_draw_board[i]/total_game_num * 100, "%")
-        print("\tlisten    ", listen_board[i], "games, with rate \t", listen_board[i]/total_game_num * 100, "%")
+        print("\tlisten   ", listen_board[i], "games, with rate \t\t", listen_board[i]/total_game_num * 100, "%")
         
     

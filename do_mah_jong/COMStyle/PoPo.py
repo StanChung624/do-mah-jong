@@ -1,5 +1,6 @@
-from Player import Player
 from .COMThoughtsBase import COMThoughtsBase
+from do_mah_jong.Basic.Player import Player
+
     
 class PoPo(COMThoughtsBase):
 

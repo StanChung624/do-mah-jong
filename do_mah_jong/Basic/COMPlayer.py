@@ -1,9 +1,10 @@
 from typing import Dict, List
-from CheckUtility import Dict
-from Deck import Deck
-from Player import Player
-from CheckUtility import *
-from COMThoughts import NoBrainWin, COMThoughtsBase
+from do_mah_jong.Basic.CheckUtility import Dict
+from do_mah_jong.Basic.Deck import Deck
+from do_mah_jong.Basic.Player import Player
+from do_mah_jong.Basic.CheckUtility import *
+from do_mah_jong.COMStyle.COMThoughtsBase import COMThoughtsBase 
+from do_mah_jong.COMStyle.NoBrainWin import NoBrainWin
 
 class COMPlayer(Player):    
 

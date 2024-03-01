@@ -1,5 +1,5 @@
-from Deck import Deck
-from CheckUtility import *
+from do_mah_jong.Basic.Deck import Deck
+from do_mah_jong.Basic.CheckUtility import *
 from typing import Dict
 from abc import ABC, abstractmethod
 
