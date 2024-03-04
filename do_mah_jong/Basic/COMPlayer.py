@@ -25,7 +25,7 @@ class COMPlayer(Player):
     def action(self, **kwargs)->bool:
         announce = kwargs.setdefault("announce", False)
         if self.can_win:
-            self.holding.append(self.see_card)            
+            self.win()
             return "win"
         elif self.can_eat:
             if announce:

@@ -1,0 +1,715 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>922</width>
+    <height>386</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QLabel" name="sea">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>30</y>
+     <width>660</width>
+     <height>120</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>660</width>
+     <height>120</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>660</width>
+     <height>120</height>
+    </size>
+   </property>
+   <property name="text">
+    <string>sea</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+   </property>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>81</x>
+     <y>271</y>
+     <width>908</width>
+     <height>112</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QLabel" name="flw_0">
+        <property name="text">
+         <string>flw_0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="flw_1">
+        <property name="text">
+         <string>flw_1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="flw_2">
+        <property name="text">
+         <string>flw_2</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="flw_3">
+        <property name="text">
+         <string>flw_3</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="flw_4">
+        <property name="text">
+         <string>flw_0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="flw_5">
+        <property name="text">
+         <string>flw_1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="flw_6">
+        <property name="text">
+         <string>flw_2</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="flw_7">
+        <property name="text">
+         <string>flw_3</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="flw_8">
+        <property name="text">
+         <string>flw_0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="flw_9">
+        <property name="text">
+         <string>flw_1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="flw_10">
+        <property name="text">
+         <string>flw_2</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="flw_11">
+        <property name="text">
+         <string>flw_3</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="flw_12">
+        <property name="text">
+         <string>flw_0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="flw_13">
+        <property name="text">
+         <string>flw_1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="flw_14">
+        <property name="text">
+         <string>flw_2</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="flw_15">
+        <property name="text">
+         <string>flw_3</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="tile_0">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>tile_0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="tile_1">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>tile_1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="tile_2">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>tile_2</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="tile_3">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>tile_3</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="tile_4">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>tile_0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="tile_5">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>tile_1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="tile_6">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>tile_2</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="tile_7">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>tile_3</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="tile_8">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>tile_0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="tile_9">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>tile_1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="tile_10">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>tile_2</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="tile_11">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>tile_3</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="tile_12">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>tile_0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="tile_13">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>tile_1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="tile_14">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>tile_2</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="tile_15">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>tile_3</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="tile_16">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>tile_3</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QPushButton" name="button_eat">
+        <property name="text">
+         <string>吃</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="button_pon">
+        <property name="text">
+         <string>碰</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="button_gan">
+        <property name="text">
+         <string>槓</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="button_win">
+        <property name="text">
+         <string>胡</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QLabel" name="message">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>220</y>
+     <width>580</width>
+     <height>50</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>580</width>
+     <height>50</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>16777214</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

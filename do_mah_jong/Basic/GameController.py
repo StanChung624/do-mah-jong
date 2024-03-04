@@ -8,7 +8,7 @@ from .GameUtility import *
 
 class GameControl():
     def __init__(self, debug:bool=False) -> None:
-        self.players = list()
+        self.players_list = list()
         self.deck = Deck()
         self.debug = debug
         self.crrnt_id = FourIndexBase()
@@ -20,10 +20,10 @@ class GameControl():
         pass
 
     def register_a_player(self, player:Player):
-        if len(self.players) < 4:            
-            self.players.append(player)
-        if len(self.players) == 4:
-            self.players = sorted(self.players, key=lambda each : each.index)
+        if len(self.players_list) < 4:            
+            self.players_list.append(player)
+        if len(self.players_list) == 4:
+            self.players_list = sorted(self.players_list, key=lambda each : each.index)
 
     def register_deck(self, deck:Deck):
         self.deck=deck
@@ -63,11 +63,12 @@ class GameControl():
         self._log += new_message
         if announce:
             print(new_message)
+        return new_message
 
     
     def record(self, wind:Winds, dice:int, won_player:Player, act_player:Player):
         if self.game_report is None:
-            self.game_report = GameReport(self.players)
+            self.game_report = GameReport(self.players_list)
         record = self.game_report.record(wind, dice, won_player, act_player)
         self.log(record)
         return
@@ -75,13 +76,13 @@ class GameControl():
     def __environment_update(self):
         win = -1
         for i in range(4):
-            player = self.players[i]
+            player = self.players_list[i]
             if player.is_win():
                 win = i
         owner = self.crrnt_id.current_id()            
                 
         if win == owner or win < 0:
-            self.players[owner].owner += 1
+            self.players_list[owner].owner += 1
             self.__is_full_round = False
             return 
         
@@ -90,8 +91,8 @@ class GameControl():
             non_owner = [0,1,2,3]
             non_owner.remove(self.crrnt_id.current_id())
             for i in non_owner:
-                self.players[i].owner = -1
-            self.players[self.crrnt_id.current_id()].owner = 0
+                self.players_list[i].owner = -1
+            self.players_list[self.crrnt_id.current_id()].owner = 0
 
             if self.crrnt_id.current_id() == 0:
                 self.winds.next()
@@ -105,14 +106,14 @@ class GameControl():
         return self.__is_full_round
 
     def start(self, announce:bool=False):
-        for player in self.players:
+        for player in self.players_list:
             player.reset()        
             player.deck = self.deck
 
         count = 0
         self.log("game start:", announce=announce)
         
-        players = Players(self.players, start_index=self.crrnt_id.current_id())        
+        players = Players(self.players_list, start_index=self.crrnt_id.current_id())        
 
         dice_point = self.deck.roll_dice()
         self.log("roll dice: " + str(dice_point), announce=announce)

@@ -105,6 +105,11 @@ class Player():
         self.amend_flower()
 
     @_action_decorator
+    def win(self, **kwargs):
+        self.holding.append(self.see_card)
+        self.__is_win = True
+
+    @_action_decorator
     def eat(self, **kwargs):
         kwargs.setdefault("formation", None)        
         if kwargs["formation"] is None:

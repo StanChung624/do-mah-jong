@@ -1,12 +1,13 @@
 from do_mah_jong.Basic import *
 from do_mah_jong.COMStyle.PoPo import PoPo
+from do_mah_jong.COMStyle.Coward import Coward
 from multiprocessing import Pool
 
 
 def run_auto_game():
     game = GameControl()
-    game.register_a_player(player=COMPlayer(is_owner=0, index=2, strategy=PoPo))
-    game.register_a_player(player=COMPlayer(is_owner=-1, index=3))
+    game.register_a_player(player=COMPlayer(is_owner=0, index=2, strategy=Coward))
+    game.register_a_player(player=COMPlayer(is_owner=-1, index=3, strategy=PoPo))
     game.register_a_player(player=COMPlayer(is_owner=-1, index=1))
     game.register_a_player(player=COMPlayer(is_owner=-1, index=0))
     game.register_deck(Deck())
@@ -44,7 +45,7 @@ def task(total_game):
 
 if __name__ == "__main__":
 
-    total_game_num = 640
+    total_game_num = 1024
     processor_num = 16
     process_game_num = int(total_game_num/processor_num)
 
