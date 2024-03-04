@@ -1,5 +1,7 @@
-from do_mah_jong.Basic.GameController import GameControl, Players, Player
-from do_mah_jong.Basic.UIPlayer import UIPlayer
+from do_mah_jong.Basic.GameController import GameControl, Players, Player, Deck
+from do_mah_jong.Basic.Deck import CustomDeck, translate, translate_list
+from do_mah_jong.UI.UIPlayer import UIPlayer
+
 
 class status():
     start_game = "start_game"
@@ -8,16 +10,18 @@ class status():
     to_act = "to_act"
     acted = "acted"
 
-
-class UIGameConroller(GameControl):
+class UIGameConroller(GameControl, ):
     def __init__(self, ui, debug: bool = False) -> None:
         self.ui = ui        
+        
         self.set_tiles_button()
         self.sea = ""
         self.sea_count = 0
         self.ditched_card_id = -1
         self.ditched_card = ""
         self.ui_no_act = False
+
+        self.on_screen = ""
 
         self.status = status.start_game
 
@@ -30,8 +34,8 @@ class UIGameConroller(GameControl):
 
     def to_sea(self, card:str):
         self.sea_count += 1
-        self.sea += card + ", "
-        if self.sea_count % 10 == 0:
+        self.sea += translate(card) + ", "
+        if self.sea_count % 20 == 0:
             self.sea += "\n"
         self.ui.sea.setText(self.sea)
 
@@ -43,25 +47,41 @@ class UIGameConroller(GameControl):
         for i in range(len(self.tiles)):
             if i < Nholding:          
                 card = self.ui_player.holding[i]
-                self.tiles[i].setText(card)                
+                self.tiles[i].setText(translate(card))
             else:
                 self.tiles[i].setText("")
         for i in range(len(self.flws)):
             if i < Nflower:
-                self.flws[i].setText(self.ui_player.flower[i])
+                card = self.ui_player.flower[i]
+                self.flws[i].setText(translate(card))
             else:
                 self.flws[i].setText("")        
     
     def log(self, message: str, player: Player = None, end: str = "\n", announce: bool = True):
-        if announce:
-            self.ui.message.setText(super().log(message, player, end, announce))       
+        super().log(message, player, end, announce)
+        msg = ""
+        if len(self._log) < 15:
+            for log_ in self._log:
+                msg += log_
         else:
-            return super().log(message, player, end, announce)
+            for log_ in self._log[-15:]:
+                msg += log_
+        self.ui.message.setText(msg)
 
-    def setup_game(self):        
-        announce = True
+    def output_env(self):
+        env = "wind: " + self.winds.current() + " " + str(self.players.current_id()) + "\n"
+        env += "streak: " + str(self.players.current().is_owner())
+        self.ui.text_env.setText(env)
+        self.sea = ""
+        self.to_sea("")
 
+    def setup_game(self):
+        self.reset_act_button()
+        self._log = list()
+        self.ui.message.setText("")
+        
         if self.status == status.start_game:
+            self.deck = Deck()
             for player in self.players_list:
                 player.reset()        
                 player.deck = self.deck
@@ -69,12 +89,14 @@ class UIGameConroller(GameControl):
                     self.ui_player = player
 
             count = 0
-            self.log("game start:", announce=announce)
+            self.log("game start:", announce=True)
             
             self.players = Players(self.players_list, start_index=self.crrnt_id.current_id())
 
+            self.output_env()
+
             dice_point = self.deck.roll_dice()
-            self.log("roll dice: " + str(dice_point), announce=announce)
+            self.log("roll dice: " + str(dice_point), announce=True)
 
             #deal cards
             for grab_i in range(4):
@@ -82,17 +104,11 @@ class UIGameConroller(GameControl):
                     for card_i in range(4):
                         player.draw_card()                 
 
-            self.log("\ncard dealed")
-            for player in self.players:            
-                self.log("", player=player)
-
             #amend flowers
             for player in self.players:
                 player.amend_flower()
-
-            self.log("flower amended")
-            for player in self.players:
-                self.log("", player=player, announce=False)
+            
+            self.players_draw_card()
 
     def check_others_action(self):
         card = self.ditched_card
@@ -115,10 +131,14 @@ class UIGameConroller(GameControl):
             action = player.action()
             if action:
                 if player.is_win():
-                    print("player " + str(player.index) + " win!")
+                    self.log("player " + str(player.index) + " 胡啦!" +
+                              "player " + str(self.players.current().index) + " 放槍)", player = player)
+                    self._environment_update()
+                    self.status = status.start_game
+                    self.set_regame_button()
                     return
                 self.ditched_card = player.ditch()
-                self.log("player " + str(player.index) + " " + action + ", ditch: " + self.ditched_card)
+                self.log("player " + str(player.index) + " " + action + ", 打: " + translate(self.ditched_card))
                 self.players.reset(player)
                 return self.check_others_action()
     
@@ -127,24 +147,40 @@ class UIGameConroller(GameControl):
         self.players_draw_card()
         return    
 
+    def _environment_update(self):
+        return super()._environment_update()
+
     def players_draw_card(self):
         player = self.players.current()
         if self.players.current_id() == self.crrnt_id:
             self.count += 1
-        card = player.draw_card()        
+
+        card = player.draw_card()
+        if card is None:
+            self.log("流局")
+            self._environment_update()
+            self.status = status.start_game
+            self.set_regame_button()
+            return
+
         player.amend_flower()
+        card = player.last_draw
+
         if player.is_win():
-            print("player " + str(player.index) + " win!")
+            self.log("player " + str(player.index) + " 胡啦! (自摸)", player = player)
+            self._environment_update()
+            self.status = status.start_game
+            self.set_regame_button()
             return
         if type(player) is UIPlayer:
             self.status = status.to_ditch
             self.show_tiles()
             self.tiles_on()
-            self.log("you draw " + card)
+            self.log("你摸進了 " + translate(card))
         else:            
             card = player.ditch()
             self.ditched_card = card
-            self.log("player " + str(player.index) + ", ditch: " + self.ditched_card)
+            self.log("player " + str(player.index) + ", 打: " + translate(self.ditched_card))
             self.check_others_action()
 
     def reset_act_button(self):
@@ -172,6 +208,17 @@ class UIGameConroller(GameControl):
             self.ui.button_win.clicked.disconnect()
         except:
             pass
+
+    def set_regame_button(self):
+        self.reset_act_button()
+        self.ui.button_eat.setEnabled(True)
+        self.ui.button_pon.setEnabled(False)
+        self.ui.button_gan.setEnabled(False)
+        self.ui.button_win.setEnabled(False)
+        self.ui.button_eat.setText("繼續?")
+
+        self.ui.button_eat.clicked.connect(self.setup_game)
+
     
     def set_act_button(self):
         self.show_tiles()
@@ -189,7 +236,7 @@ class UIGameConroller(GameControl):
                         self.reset_act_button()
                         self.tiles_on()
                         return
-                    self.ui.button_eat.setText(str(combs[0]))
+                    self.ui.button_eat.setText(str(translate_list(combs[0])))
                     self.ui.button_eat.setEnabled(True)
                     self.ui.button_pon.setEnabled(False)
                     self.ui.button_gan.setEnabled(False)
@@ -202,7 +249,7 @@ class UIGameConroller(GameControl):
                         self.reset_act_button()
                         self.tiles_on()
                         return
-                    self.ui.button_pon.setText(str(combs[1]))
+                    self.ui.button_pon.setText(str(translate_list(combs[1])))
                     self.ui.button_pon.setEnabled(True)
                     self.ui.button_pon.clicked.connect(ui_eat_1)
                 if len(combs) >= 3:
@@ -212,7 +259,7 @@ class UIGameConroller(GameControl):
                         self.reset_act_button()
                         self.tiles_on()
                         return
-                    self.ui.button_gan.setText(str(combs[2]))
+                    self.ui.button_gan.setText(str(translate_list(combs[2])))
                     self.ui.button_gan.setEnabled(True)
                     self.ui.button_gan.clicked.connect(ui_eat_2)
 
@@ -242,18 +289,39 @@ class UIGameConroller(GameControl):
 
         if self.ui_player.can_win:
             def ui_win():
+                self.log("player " + str(self.ui_player.index) + " 胡啦! ( player "+ str(self.players.index) +" 放槍)")
                 self.ui_player.win()
+                self._environment_update()
                 self.show_tiles()
-            self.ui.button_win.clicked.connect(ui_win)
-        else:
-            def no_act():
-                self.ui_no_act = True
-                self.check_others_action()
-                self.ui_no_act = False
-                self.reset_act_button()
-                return
+                self.status = status.start_game
+                self.set_regame_button()
+
+            self.ui.button_win.clicked.connect(ui_win)            
+        
+
+        def no_act():
+            self.ui_no_act = True
+            self.check_others_action()
+            self.ui_no_act = False
+            self.reset_act_button()
+            return
+        
+        if not self.ui_player.can_win:
             self.ui.button_win.setText("過")
+            self.ui.button_win.setEnabled(True)
             self.ui.button_win.clicked.connect(no_act)
+        elif not self.ui_player.can_gan:
+            self.ui.button_gan.setText("過")
+            self.ui.button_gan.setEnabled(True)
+            self.ui.button_gan.clicked.connect(no_act)
+        elif not self.ui_player.can_pon:
+            self.ui.button_pon.setText("過")
+            self.ui.button_pon.setEnabled(True)
+            self.ui.button_pon.clicked.connect(no_act)
+        elif not self.ui_player.can_eat:
+            self.ui.button_eat.setText("過")
+            self.ui.button_eat.setEnabled(True)
+            self.ui.button_eat.clicked.connect(no_act)
                 
     
 
@@ -262,7 +330,7 @@ class UIGameConroller(GameControl):
         self.players.reset(self.ui_player)
         self.ditched_card=self.ui_player.holding[self.ditched_card_id]
         self.ui_player.discard_card(self.ditched_card)
-        self.log("player 0, ditch: " + self.ditched_card)
+        self.log("打: " + translate(self.ditched_card))
         self.show_tiles()
         self.check_others_action()
 
@@ -406,3 +474,4 @@ class UIGameConroller(GameControl):
         self.ui.tile_14.clicked.connect(fn_14)
         self.ui.tile_15.clicked.connect(fn_15)
         self.ui.tile_16.clicked.connect(fn_16)
+

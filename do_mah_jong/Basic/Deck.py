@@ -1,5 +1,5 @@
 import random
-
+from typing import List
 class Deck():
     m_list = ["m1","m2","m3","m4","m5","m6","m7","m8","m9"]
     o_list = ["o1","o2","o3","o4","o5","o6","o7","o8","o9"]
@@ -59,11 +59,39 @@ class Deck():
         self.deck_tracker[self.seq[0]] -= 1        
         return self.seq.pop(0)
 
-def is_text(card:str):
-    if card in Deck.t_list:
+def is_text(card:str)->bool:
+    if card in Deck.t_list or card in Deck.f_list:
         return True
     else:
         return False
+    
+def translate(card:str)->str:
+    t_map = {"Ch":"中", "Fa":"發", "By":"白", "E":"東", "S":"南", "W":"西", "N":"北"}
+    map = {"o":"筒", "l":"條", "m":"萬"}       
+    f_map = {"x1":"春1","x2":"夏2","x3":"秋3","x4":"冬4","X1":"梅1","X2":"蘭2","X3":"菊3","X4":"竹4"}
+    ret = card
+    try:
+        if card in Deck.t_list:
+            ret = t_map[card]
+        elif not is_text(card):
+            ret = str(card[1]) + map[card[0]]
+        elif card in f_map.keys():
+            ret = f_map[card]
+        return ret
+    except:
+        return card
+
+def translate_list(cards:List[str])->List[str]:
+    ret = list()
+    for card in cards:
+        ret.append(translate(card))
+    return ret
+    
+class CustomDeck(Deck):
+    def __init__(self):
+        super().__init__()        
+        print(self.seq)
+        print(self.sea)
 
 if (__name__=="__main__"):
     deck = Deck()

@@ -95,11 +95,17 @@ def check_id(no_pair_n_txt:list, target:str, tri_count:int = 0):
         else:
             return pure_num, tri_count
         
-    def remove_smallest_stt(pure_num):
+    def remove_smallest_stt(pure_num:List[str]):
         if len(pure_num)==0:
             return pure_num
-        if int(pure_num[1]) == int(pure_num[0])+1 and int(pure_num[2]) == int(pure_num[0])+2:
-            return pure_num[3:]
+        first = pure_num[0]
+        second = str(int(pure_num[0])+1)
+        third = str(int(pure_num[0])+2)
+        if first in pure_num and second in pure_num and third in pure_num:
+            pure_num.remove(first)
+            pure_num.remove(second)
+            pure_num.remove(third)
+            return pure_num
         else:
             return pure_num
     
@@ -126,7 +132,7 @@ def is_win(holding, ignore_pair:bool=False):
         if (len(combinations)==0) and not ignore_pair:
             # no pair
             return False
-        else:
+        elif len(combinations) == 0 and ignore_pair:
             combinations.append(holding+['dummy', 'dummy'])
         
         for comb in combinations:

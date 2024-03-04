@@ -55,6 +55,8 @@ class Player():
         self.can_win = False
         self.__is_win = None
 
+        self.last_draw = ""
+
     def __set_seen_cards(self)->Dict[int, Dict[str,int]]:
         ret = dict()
         other_players = [0,1,2,3]
@@ -101,7 +103,8 @@ class Player():
     def gan(self, **kwargs):
         self.flower += [self.see_card]*4
         for i in range(3):
-            self.holding.remove(self.see_card)       
+            self.holding.remove(self.see_card)      
+        self.draw_card(deck=self.deck)
         self.amend_flower()
 
     @_action_decorator
@@ -144,6 +147,7 @@ class Player():
             self.see_card = card
             if announce:
                 print("draw", card)
+            self.last_draw = card
             return card
         elif deck:
             card = deck.serve()
@@ -153,6 +157,7 @@ class Player():
                 self.see_card = card
                 if announce:
                     print("draw", card)
+                self.last_draw = card
                 return card
             else:
                 return None

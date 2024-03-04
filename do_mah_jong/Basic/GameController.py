@@ -13,8 +13,8 @@ class GameControl():
         self.debug = debug
         self.crrnt_id = FourIndexBase()
         self.game_count = 0
-        self.winds = Winds()        
-        self._log = ""
+        self.winds = Winds()
+        self._log = list()
         self.game_report = None
         self.__is_full_round = False
         pass
@@ -60,7 +60,7 @@ class GameControl():
         new_message = message + end        
         if player:
             new_message += player.show(announce=False) + end
-        self._log += new_message
+        self._log.append(new_message)
         if announce:
             print(new_message)
         return new_message
@@ -73,7 +73,7 @@ class GameControl():
         self.log(record)
         return
     
-    def __environment_update(self):
+    def _environment_update(self):
         win = -1
         for i in range(4):
             player = self.players_list[i]
@@ -142,7 +142,7 @@ class GameControl():
             card = player.draw_card()
             if card is None:
                 self.record(self.winds, dice_point, None, player)
-                self.__environment_update()
+                self._environment_update()
                 return count
             count += 1
 
@@ -157,7 +157,7 @@ class GameControl():
                 self.log("player index = "+ str(player.index) + ", win by self-draw",
                           player=player, announce=announce)
                 self.record(self.winds, dice_point, won_player=player, act_player=player)
-                self.__environment_update()
+                self._environment_update()
                 return count
             
             card = player.ditch()
@@ -171,7 +171,7 @@ class GameControl():
                     self.log("player index = "+ str(player.index) + ", win", player=player,
                              announce=announce)                    
                     self.record(self.winds, dice_point, won_player=player, act_player=act_player)
-                    self.__environment_update()
+                    self._environment_update()
                     return count
 
             players.next()
