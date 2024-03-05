@@ -1,7 +1,7 @@
 from typing import List, Dict
 from do_mah_jong.Basic.Deck import Deck, is_text
 from do_mah_jong.Basic.Player import Player
-from do_mah_jong.Basic.CheckUtility import listen, get_neighbor
+from do_mah_jong.Basic.CheckUtility import listen, get_neighbor, ditch_to_listen
 
 class COMThoughtsBase():
     def __init__(self, player:Player)->None:
@@ -28,7 +28,11 @@ class COMThoughtsBase():
     def __generate_bias(self)->Dict[str,int]:
         ret = dict()
         for card in Deck.t_list:
-            ret[card] = self.bias_text
+            if card in ["E", "S", "W", "N"]:
+                ret[card] = self.bias_text * 3
+            else:
+                ret[card] = self.bias_text * 2
+
         ret[Deck.l_list[0]] = self.bias_side * 2
         ret[Deck.l_list[-1]] = self.bias_side * 2
         ret[Deck.m_list[0]] = self.bias_side * 2
@@ -58,11 +62,12 @@ class COMThoughtsBase():
                 self.grades[card] += self.bias[card]
     
     def base_ditch_to_listen(self, point:int):
-        for card in self.grades.keys():
-            holding = list(self.holding)
-            holding.remove(card)
-            score = len(listen(holding)) * (-point)
-            self.grades[card] += score
+        ditch_lstn = ditch_to_listen(self.holding)
+        for ditch, lstn in ditch_lstn.items():
+            left_cards = 0
+            for card in lstn:
+                left_cards += self.tracker[card]
+            self.grades[ditch] -= left_cards * point
     
     def base_neighbor_cards(self, point:int):
         for card in self.grades.keys():
@@ -74,7 +79,9 @@ class COMThoughtsBase():
 
     def base_duplicate_cards(self, point:int):
         for card, count in self.count.items():
-            if count > 1:
+            if count > 1 and card in Deck.t_list:
+                self.grades[card] += point * 2
+            elif count > 1:
                 self.grades[card] += point
 
     def base_down_stream_player_played_cards(self, point:int):

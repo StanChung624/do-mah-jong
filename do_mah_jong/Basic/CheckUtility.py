@@ -167,7 +167,16 @@ def listen(holding:List[str], ignore_pair:bool=False)->List[str]:
         holding.remove(card)        
     return ret
 
-
+def ditch_to_listen(holding:List[str])->Dict[str,List[str]]:
+    ret = dict()
+    for card in holding:
+        tmp = list(holding)
+        tmp.remove(card)
+        lstn = listen(tmp)        
+        if len(lstn) > 0:
+            ret[card] = lstn
+        
+    return ret
 
 if __name__ == "__main__":        
 

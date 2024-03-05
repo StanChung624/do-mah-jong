@@ -659,26 +659,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QLabel" name="text_env">
-   <property name="geometry">
-    <rect>
-     <x>920</x>
-     <y>210</y>
-     <width>60</width>
-     <height>45</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>60</width>
-     <height>45</height>
-    </size>
-   </property>
-   <property name="text">
-    <string>TextLabel</string>
-   </property>
-  </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>80</x>
@@ -1177,6 +1158,44 @@
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>920</x>
+     <y>140</y>
+     <width>132</width>
+     <height>105</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QLabel" name="copilot_msg">
+      <property name="minimumSize">
+       <size>
+        <width>130</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="text_env">
+      <property name="minimumSize">
+       <size>
+        <width>130</width>
+        <height>45</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
       </property>
      </widget>
     </item>

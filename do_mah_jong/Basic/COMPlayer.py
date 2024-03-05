@@ -97,7 +97,7 @@ class COMPlayer(Player):
         return ret, efficiency
     
     @Player._sort
-    def suggest_ditch(self)->Tuple[Dict[str,int], str]:
+    def suggest_ditch(self)->str:
         thoughts = self.strategy(self)
         return thoughts.best_ditch()
     

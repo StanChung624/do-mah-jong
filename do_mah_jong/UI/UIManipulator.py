@@ -10,8 +10,16 @@ class UIManipulator(BaseStructure):
         super().__init__()
         
     def setupUi(self, Dialog):
-        super().setupUi(Dialog)
-        return self.__set_tiles_button()
+        super().setupUi(Dialog)        
+    
+    def set_button_tiles(self):
+        self.__set_tiles_button()
+        for tile in self.tiles:
+            tile.setText("")
+        for flw in self.flws:
+            flw.setText("")
+        return
+        
     
     def tiles_off(self):
         for tile in self.tiles:
@@ -26,6 +34,16 @@ class UIManipulator(BaseStructure):
 
     @tiles_on
     def show_tiles(self, ui_player:UIPlayer):
+
+        if self.status == Status.to_ditch:
+            self.copilot_msg.setText(
+                "o_o:\n我是會丟 " + translate(self.ui_player.copilot()) + " 啦"
+            )
+        else:
+            self.copilot_msg.setText(
+                "o_o"
+            )
+
         Nholding = len(ui_player.holding)
         ui_player.holding.sort()
         Nflower = len(ui_player.flower)
@@ -41,7 +59,7 @@ class UIManipulator(BaseStructure):
                 card = ui_player.flower[i]
                 self.flws[i].setText(translate(card))
             else:
-                self.flws[i].setText("")        
+                self.flws[i].setText("")
 
     def __set_tiles_button(self)->None:
         self.tiles = list()        
@@ -85,75 +103,86 @@ class UIManipulator(BaseStructure):
         self.flws.append(self.flw_13)
         self.flws.append(self.flw_14)
 
-        self.flws.append(self.flw_15)       
+        self.flws.append(self.flw_15)      
+
+        def ditch_card_action(self):
+            self.tiles_off()
+            self.status = Status.ditched
+            self.reset_act_button()
+            self.players.reset(self.ui_player)
+            self.user_ditch_card=self.ui_player.holding[self.user_ditch_card_id]
+            self.ui_player.discard_card(self.user_ditch_card)
+            self.log("打: " + translate(self.user_ditch_card))
+            self.show_tiles(self.ui_player)
+            self.check_others_action() 
     
         def fn_0():
-            self.ditched_card_id = 0
-            self.ui_ditch_card()
+            self.user_ditch_card_id = 0
+            ditch_card_action(self)
             return
         def fn_1():
-            self.ditched_card_id = 1
-            self.ui_ditch_card()
+            self.user_ditch_card_id = 1
+            ditch_card_action(self)
             return
         def fn_2():
-            self.ditched_card_id = 2
-            self.ui_ditch_card()
+            self.user_ditch_card_id = 2
+            ditch_card_action(self)
             return
         def fn_3():
-            self.ditched_card_id = 3
-            self.ui_ditch_card()
+            self.user_ditch_card_id = 3
+            ditch_card_action(self)
             return
         def fn_4():
-            self.ditched_card_id = 4
-            self.ui_ditch_card()            
+            self.user_ditch_card_id = 4
+            ditch_card_action(self)            
             return
         def fn_5():
-            self.ditched_card_id = 5
-            self.ui_ditch_card()
+            self.user_ditch_card_id = 5
+            ditch_card_action(self)
             return
         def fn_6():
-            self.ditched_card_id = 6
-            self.ui_ditch_card()
+            self.user_ditch_card_id = 6
+            ditch_card_action(self)
             return
         def fn_7():
-            self.ditched_card_id = 7
-            self.ui_ditch_card()
+            self.user_ditch_card_id = 7
+            ditch_card_action(self)
             return
         def fn_8():
-            self.ditched_card_id = 8
-            self.ui_ditch_card()
+            self.user_ditch_card_id = 8
+            ditch_card_action(self)
             return
         def fn_9():
-            self.ditched_card_id = 9
-            self.ui_ditch_card()
+            self.user_ditch_card_id = 9
+            ditch_card_action(self)
             return
         def fn_10():
-            self.ditched_card_id = 10
-            self.ui_ditch_card()
+            self.user_ditch_card_id = 10
+            ditch_card_action(self)
             return
         def fn_11():
-            self.ditched_card_id = 11
-            self.ui_ditch_card()
+            self.user_ditch_card_id = 11
+            ditch_card_action(self)
             return        
         def fn_12():
-            self.ditched_card_id = 12
-            self.ui_ditch_card()
+            self.user_ditch_card_id = 12
+            ditch_card_action(self)
             return        
         def fn_13():
-            self.ditched_card_id = 13
-            self.ui_ditch_card()
+            self.user_ditch_card_id = 13
+            ditch_card_action(self)
             return        
         def fn_14():
-            self.ditched_card_id = 14
-            self.ui_ditch_card()
+            self.user_ditch_card_id = 14
+            ditch_card_action(self)
             return
         def fn_15():
-            self.ditched_card_id = 15
-            self.ui_ditch_card()
+            self.user_ditch_card_id = 15
+            ditch_card_action(self)
             return        
         def fn_16():
-            self.ditched_card_id = 16
-            self.ui_ditch_card()
+            self.user_ditch_card_id = 16
+            ditch_card_action(self)
             return
 
         self.tile_0.clicked.connect(fn_0)
@@ -176,15 +205,14 @@ class UIManipulator(BaseStructure):
         self.tile_15.clicked.connect(fn_15)
         self.tile_16.clicked.connect(fn_16)
 
-    
-
     def set_button_eat(self, ui_player:UIPlayer):
             eat_combinations = ui_player.eat_combinations
 
             def show_eat_combination():
                 if len(eat_combinations) >= 1:
-                    def ui_eat_0():
+                    def ui_eat_0():                        
                         ui_player.eat(formation=eat_combinations[0])
+                        self.status = Status.to_ditch
                         self.show_tiles(ui_player)
                         self.reset_act_button()
                         return
@@ -197,6 +225,7 @@ class UIManipulator(BaseStructure):
                 if len(eat_combinations) >= 2:
                     def ui_eat_1():
                         ui_player.eat(formation=eat_combinations[1])
+                        self.status = Status.to_ditch
                         self.show_tiles(ui_player)
                         self.reset_act_button()                        
                         return
@@ -206,6 +235,7 @@ class UIManipulator(BaseStructure):
                 if len(eat_combinations) >= 3:
                     def ui_eat_2():
                         ui_player.eat(formation=eat_combinations[2])
+                        self.status = Status.to_ditch
                         self.show_tiles(ui_player)
                         self.reset_act_button()                        
                         return
@@ -219,8 +249,9 @@ class UIManipulator(BaseStructure):
     def set_button_pon(self, ui_player:UIPlayer):
         def ui_pon():
                 ui_player.pon()
+                self.button_pon.setEnabled(False)
+                self.status = Status.to_ditch
                 self.show_tiles(ui_player)
-                self.button_pon.setEnabled(False)               
                 self.reset_act_button()
                 return
 
@@ -233,6 +264,7 @@ class UIManipulator(BaseStructure):
                 self.log("補進了 " + translate(ui_player.last_draw))
                 self.button_gan.setEnabled(False)               
                 self.reset_act_button()
+                self.status = Status.to_ditch
                 self.show_tiles(ui_player)
                 return
 
@@ -245,6 +277,7 @@ class UIManipulator(BaseStructure):
                 self.log("補進了 " + translate(ui_player.last_draw))
                 self.button_gan.setEnabled(False)               
                 self.reset_act_button()
+                self.status = Status.to_ditch
                 self.show_tiles(ui_player)
                 return
 
@@ -254,15 +287,13 @@ class UIManipulator(BaseStructure):
     def set_button_win(self, ui_player:UIPlayer):
         def action():
             if self.players.current().index == ui_player.index:
-                self.log("player " + str(ui_player.index) + " 胡啦! (自摸)")
-            else:
-                self.log("player " + str(ui_player.index) + " 胡啦! ( player "+ str(self.players.index) +" 放槍)")
-
+                self.log("player " + str(ui_player.index) + " 胡啦! (自摸)")            
             ui_player.win()
             self._environment_update()
             self.show_tiles(ui_player)
             self.status = Status.start_game
             self.set_regame_button(self.setup_game)
+            return 
         self.button_win.setEnabled(True)
         self.button_win.clicked.connect(action)
 
