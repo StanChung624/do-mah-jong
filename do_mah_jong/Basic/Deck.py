@@ -90,8 +90,30 @@ def translate_list(cards:List[str])->List[str]:
 class CustomDeck(Deck):
     def __init__(self):
         super().__init__()        
-        print(self.seq)
-        print(self.sea)
+        p0 = ["m1", "m1", "m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9", "m9", "m9", "Fa", "Fa", "Fa"]
+        p1 = ["E","W","S","N", "o1", "o3", "o5", "o7", "o9", "l2", "l4", "l6", "l8", "l9", "By", "Ch"]
+        p2 = ["E","W","S","N", "o1", "o3", "o5", "o7", "o9", "l2", "l4", "l6", "l8", "l9", "By", "Ch"]
+        p3 = ["E","W","S","N", "o1", "o3", "o5", "o7", "o9", "l2", "l4", "l6", "l8", "l9", "By", "Ch"]
+        ps = [p0, p1, p2, p3]
+        to_draw = ["m1"]
+
+        new_seq = []
+        all_cards = self.seq + self.sea
+        for i in range(4):
+            for p in ps:
+                for j in range(4):
+                    card = p.pop(0)
+                    new_seq.append(card)
+                    all_cards.remove(card)
+        for i in range(128-len(new_seq)):
+            if len(to_draw) > 0:
+                new_seq.append(to_draw.pop(0))
+            else:
+                new_seq.append(all_cards.pop(0))
+        self.seq = new_seq
+        self.sea = all_cards
+
+
 
 if (__name__=="__main__"):
     deck = Deck()

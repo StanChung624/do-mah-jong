@@ -108,6 +108,14 @@ class Player():
         self.amend_flower()
 
     @_action_decorator
+    def self_gan(self, **kwargs):
+        self.flower += [self.see_card]*4
+        for i in range(4):
+            self.holding.remove(self.see_card)
+        self.draw_card(deck=self.deck)
+        self.amend_flower()
+
+    @_action_decorator
     def win(self, **kwargs):
         self.holding.append(self.see_card)
         self.__is_win = True
@@ -223,7 +231,8 @@ class Player():
             is_upstream_player = (self.index + 3) % 4 == player_index
 
         self.see_card = card
-        self.seen_cards[player_index][card] += 1
+        if player_index is not None:
+            self.seen_cards[player_index][card] += 1
         self.tracker[card] -= 1
 
         # return in-take combination

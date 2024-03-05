@@ -1,21 +1,15 @@
 from do_mah_jong.Basic.GameController import GameControl, Players, Player, Deck
 from do_mah_jong.Basic.Deck import CustomDeck, translate, translate_list
 from do_mah_jong.UI.UIPlayer import UIPlayer
+from do_mah_jong.UI.UIManipulator import UIManipulator
+from do_mah_jong.UI.Status import Status
 
+class UIGameConroller(GameControl, UIManipulator):
+    def __init__(self, dialog, debug: bool = False) -> None:
 
-class status():
-    start_game = "start_game"
-    to_ditch = "to_ditch"
-    ditched = "ditched"
-    to_act = "to_act"
-    acted = "acted"
+        self.setupUi(dialog)
 
-class UIGameConroller(GameControl, ):
-    def __init__(self, ui, debug: bool = False) -> None:
-        self.ui = ui        
-        
-        self.set_tiles_button()
-        self.sea = ""
+        self.sea_messages = ""
         self.sea_count = 0
         self.ditched_card_id = -1
         self.ditched_card = ""
@@ -23,39 +17,22 @@ class UIGameConroller(GameControl, ):
 
         self.on_screen = ""
 
-        self.status = status.start_game
+        self.status = Status.start_game
 
         for tile in self.tiles:
             tile.setText("")
         for flw in self.flws:
             flw.setText("")
 
-        super().__init__(debug)
+        super().__init__(debug)        
 
     def to_sea(self, card:str):
         self.sea_count += 1
-        self.sea += translate(card) + ", "
+        self.sea_messages += translate(card) + ", "
         if self.sea_count % 20 == 0:
-            self.sea += "\n"
-        self.ui.sea.setText(self.sea)
-
-
-    def show_tiles(self):
-        Nholding = len(self.ui_player.holding)
-        self.ui_player.holding.sort()
-        Nflower = len(self.ui_player.flower)
-        for i in range(len(self.tiles)):
-            if i < Nholding:          
-                card = self.ui_player.holding[i]
-                self.tiles[i].setText(translate(card))
-            else:
-                self.tiles[i].setText("")
-        for i in range(len(self.flws)):
-            if i < Nflower:
-                card = self.ui_player.flower[i]
-                self.flws[i].setText(translate(card))
-            else:
-                self.flws[i].setText("")        
+            self.sea_messages += "\n"
+        self.sea.setText(self.sea_messages)
+    
     
     def log(self, message: str, player: Player = None, end: str = "\n", announce: bool = True):
         super().log(message, player, end, announce)
@@ -66,22 +43,22 @@ class UIGameConroller(GameControl, ):
         else:
             for log_ in self._log[-15:]:
                 msg += log_
-        self.ui.message.setText(msg)
+        self.message.setText(msg)
 
     def output_env(self):
         env = "wind: " + self.winds.current() + " " + str(self.players.current_id()) + "\n"
         env += "streak: " + str(self.players.current().is_owner())
-        self.ui.text_env.setText(env)
-        self.sea = ""
+        self.text_env.setText(env)
+        self.sea_messages = ""
         self.to_sea("")
 
     def setup_game(self):
         self.reset_act_button()
         self._log = list()
-        self.ui.message.setText("")
+        self.message.setText("")
         
-        if self.status == status.start_game:
-            self.deck = Deck()
+        if self.status == Status.start_game:
+            self.deck = CustomDeck()
             for player in self.players_list:
                 player.reset()        
                 player.deck = self.deck
@@ -124,7 +101,8 @@ class UIGameConroller(GameControl, ):
             elif self.ui_no_act:
                 continue
             elif type(player) is UIPlayer and can_act:
-                self.status = status.to_act
+                self.status = Status.to_act
+                self.show_tiles(self.ui_player)
                 self.set_act_button()
                 return
             
@@ -132,10 +110,10 @@ class UIGameConroller(GameControl, ):
             if action:
                 if player.is_win():
                     self.log("player " + str(player.index) + " 胡啦!" +
-                              "player " + str(self.players.current().index) + " 放槍)", player = player)
+                              "player (" + str(self.players.current().index) + " 放槍)", player = player)
                     self._environment_update()
-                    self.status = status.start_game
-                    self.set_regame_button()
+                    self.status = Status.start_game
+                    self.set_regame_button(self.setup_game)
                     return
                 self.ditched_card = player.ditch()
                 self.log("player " + str(player.index) + " " + action + ", 打: " + translate(self.ditched_card))
@@ -156,149 +134,56 @@ class UIGameConroller(GameControl, ):
             self.count += 1
 
         card = player.draw_card()
+
         if card is None:
             self.log("流局")
             self._environment_update()
-            self.status = status.start_game
-            self.set_regame_button()
+            self.status = Status.start_game
+            self.set_regame_button(self.setup_game)
             return
 
         player.amend_flower()
-        card = player.last_draw
-
-        if player.is_win():
-            self.log("player " + str(player.index) + " 胡啦! (自摸)", player = player)
-            self._environment_update()
-            self.status = status.start_game
-            self.set_regame_button()
-            return
+        card = player.last_draw        
+        
         if type(player) is UIPlayer:
-            self.status = status.to_ditch
-            self.show_tiles()
+            self.status = Status.to_ditch
+            self.show_tiles(self.ui_player)
             self.tiles_on()
             self.log("你摸進了 " + translate(card))
+
+            # for gan or self draw scenario
+            player.holding.remove(card)
+            player.tracker[card] += 1
+            player.see(card=card)
+            player.draw_card(card=card)
+            if player.can_gan or player.can_win:               
+                self.set_self_win_gan_button()
+                return
+
         else:            
             card = player.ditch()
             self.ditched_card = card
             self.log("player " + str(player.index) + ", 打: " + translate(self.ditched_card))
             self.check_others_action()
 
-    def reset_act_button(self):
-        self.ui.button_eat.setText("吃")        
-        self.ui.button_pon.setText("碰")        
-        self.ui.button_gan.setText("槓")
-        self.ui.button_win.setText("胡")
-        self.ui.button_eat.setEnabled(False)
-        self.ui.button_pon.setEnabled(False)
-        self.ui.button_gan.setEnabled(False)
-        self.ui.button_win.setEnabled(False)        
-        try:
-            self.ui.button_eat.clicked.disconnect()
-        except:
-            pass
-        try:
-            self.ui.button_pon.clicked.disconnect()
-        except:
-            pass
-        try:
-            self.ui.button_gan.clicked.disconnect()
-        except:
-            pass
-        try:
-            self.ui.button_win.clicked.disconnect()
-        except:
-            pass
-
-    def set_regame_button(self):
-        self.reset_act_button()
-        self.ui.button_eat.setEnabled(True)
-        self.ui.button_pon.setEnabled(False)
-        self.ui.button_gan.setEnabled(False)
-        self.ui.button_win.setEnabled(False)
-        self.ui.button_eat.setText("繼續?")
-
-        self.ui.button_eat.clicked.connect(self.setup_game)
-
+        if player.is_win():
+            self.log("player " + str(player.index) + " 胡啦! (自摸)", player = player)
+            self._environment_update()
+            self.status = Status.start_game
+            self.set_regame_button(self.setup_game)
+            return
     
-    def set_act_button(self):
-        self.show_tiles()
-        self.ui.button_eat.setEnabled(self.ui_player.can_eat)
-        self.ui.button_pon.setEnabled(self.ui_player.can_pon)
-        self.ui.button_gan.setEnabled(self.ui_player.can_gan)
-        self.ui.button_win.setEnabled(True)
+    def set_act_button(self):        
         if self.ui_player.can_eat:
-            combs = self.ui_player.eat_combinations            
-            def show_eat_combination():
-                if len(combs) >= 1:
-                    def ui_eat_0():
-                        self.ui_player.eat(formation=combs[0])
-                        self.show_tiles()
-                        self.reset_act_button()
-                        self.tiles_on()
-                        return
-                    self.ui.button_eat.setText(str(translate_list(combs[0])))
-                    self.ui.button_eat.setEnabled(True)
-                    self.ui.button_pon.setEnabled(False)
-                    self.ui.button_gan.setEnabled(False)
-                    self.ui.button_win.setEnabled(False)
-                    self.ui.button_eat.clicked.connect(ui_eat_0)
-                if len(combs) >= 2:
-                    def ui_eat_1():
-                        self.ui_player.eat(formation=combs[1])
-                        self.show_tiles()
-                        self.reset_act_button()
-                        self.tiles_on()
-                        return
-                    self.ui.button_pon.setText(str(translate_list(combs[1])))
-                    self.ui.button_pon.setEnabled(True)
-                    self.ui.button_pon.clicked.connect(ui_eat_1)
-                if len(combs) >= 3:
-                    def ui_eat_2():
-                        self.ui_player.eat(formation=combs[2])
-                        self.show_tiles()
-                        self.reset_act_button()
-                        self.tiles_on()
-                        return
-                    self.ui.button_gan.setText(str(translate_list(combs[2])))
-                    self.ui.button_gan.setEnabled(True)
-                    self.ui.button_gan.clicked.connect(ui_eat_2)
-
-            self.ui.button_eat.clicked.connect(show_eat_combination)
-
+            self.set_button_eat(self.ui_player)
         if self.ui_player.can_pon:
-            def ui_pon():
-                self.ui_player.pon()
-                self.show_tiles()
-                self.ui.button_pon.setEnabled(False)               
-                self.reset_act_button()
-                self.tiles_on()
-                return
-
-            self.ui.button_pon.clicked.connect(ui_pon)
-                
+            self.set_button_pon(self.ui_player)                
         if self.ui_player.can_gan:
-            def ui_gan():
-                self.ui_player.gan()
-                self.show_tiles()
-                self.ui.button_gan.setEnabled(False)               
-                self.reset_act_button()
-                self.tiles_on()
-                return
-
-            self.ui.button_gan.clicked.connect(ui_gan)
-
+            self.set_button_gan(self.ui_player)
         if self.ui_player.can_win:
-            def ui_win():
-                self.log("player " + str(self.ui_player.index) + " 胡啦! ( player "+ str(self.players.index) +" 放槍)")
-                self.ui_player.win()
-                self._environment_update()
-                self.show_tiles()
-                self.status = status.start_game
-                self.set_regame_button()
-
-            self.ui.button_win.clicked.connect(ui_win)            
-        
-
+            
+            self.set_button_win(self.ui_player)
+            
         def no_act():
             self.ui_no_act = True
             self.check_others_action()
@@ -306,172 +191,25 @@ class UIGameConroller(GameControl, ):
             self.reset_act_button()
             return
         
-        if not self.ui_player.can_win:
-            self.ui.button_win.setText("過")
-            self.ui.button_win.setEnabled(True)
-            self.ui.button_win.clicked.connect(no_act)
-        elif not self.ui_player.can_gan:
-            self.ui.button_gan.setText("過")
-            self.ui.button_gan.setEnabled(True)
-            self.ui.button_gan.clicked.connect(no_act)
-        elif not self.ui_player.can_pon:
-            self.ui.button_pon.setText("過")
-            self.ui.button_pon.setEnabled(True)
-            self.ui.button_pon.clicked.connect(no_act)
-        elif not self.ui_player.can_eat:
-            self.ui.button_eat.setText("過")
-            self.ui.button_eat.setEnabled(True)
-            self.ui.button_eat.clicked.connect(no_act)
-                
-    
+        self.set_button_no_act(self.ui_player, no_act)
+
+    def set_self_win_gan_button(self):        
+        if self.ui_player.can_gan:
+            self.set_button_self_gan(self.ui_player)
+        if self.ui_player.can_win:
+            self.set_button_win(self.ui_player)            
 
     def ui_ditch_card(self):
         self.tiles_off()
+        self.reset_act_button()
         self.players.reset(self.ui_player)
         self.ditched_card=self.ui_player.holding[self.ditched_card_id]
         self.ui_player.discard_card(self.ditched_card)
         self.log("打: " + translate(self.ditched_card))
-        self.show_tiles()
+        self.show_tiles(self.ui_player)
         self.check_others_action()
 
-    def tiles_off(self):
-        for tile in self.tiles:
-            tile.setEnabled(False)
-
-    def tiles_on(self):
-        for tile in self.tiles:
-            tile.setEnabled(True)
-
-    def set_tiles_button(self):
-        self.tiles = list()
-        self.tiles.append(self.ui.tile_0)
-        self.tiles.append(self.ui.tile_1)
-        self.tiles.append(self.ui.tile_2)
-        self.tiles.append(self.ui.tile_3)
-        self.tiles.append(self.ui.tile_4)
-
-        self.tiles.append(self.ui.tile_5)
-        self.tiles.append(self.ui.tile_6)
-        self.tiles.append(self.ui.tile_7)
-        self.tiles.append(self.ui.tile_8)
-        self.tiles.append(self.ui.tile_9)
-
-        self.tiles.append(self.ui.tile_10)
-        self.tiles.append(self.ui.tile_11)
-        self.tiles.append(self.ui.tile_12)
-        self.tiles.append(self.ui.tile_13)
-        self.tiles.append(self.ui.tile_14)
-
-        self.tiles.append(self.ui.tile_15)
-        self.tiles.append(self.ui.tile_16)
-
-        self.flws = list()
-        self.flws.append(self.ui.flw_0)
-        self.flws.append(self.ui.flw_1)
-        self.flws.append(self.ui.flw_2)
-        self.flws.append(self.ui.flw_3)
-        self.flws.append(self.ui.flw_4)
-
-        self.flws.append(self.ui.flw_5)
-        self.flws.append(self.ui.flw_6)
-        self.flws.append(self.ui.flw_7)
-        self.flws.append(self.ui.flw_8)
-        self.flws.append(self.ui.flw_9)
-
-        self.flws.append(self.ui.flw_10)
-        self.flws.append(self.ui.flw_11)
-        self.flws.append(self.ui.flw_12)
-        self.flws.append(self.ui.flw_13)
-        self.flws.append(self.ui.flw_14)
-
-        self.flws.append(self.ui.flw_15)       
     
-        def fn_0():
-            self.ditched_card_id = 0
-            self.ui_ditch_card()
-            return
-        def fn_1():
-            self.ditched_card_id = 1
-            self.ui_ditch_card()
-            return
-        def fn_2():
-            self.ditched_card_id = 2
-            self.ui_ditch_card()
-            return
-        def fn_3():
-            self.ditched_card_id = 3
-            self.ui_ditch_card()
-            return
-        def fn_4():
-            self.ditched_card_id = 4
-            self.ui_ditch_card()            
-            return
-        def fn_5():
-            self.ditched_card_id = 5
-            self.ui_ditch_card()
-            return
-        def fn_6():
-            self.ditched_card_id = 6
-            self.ui_ditch_card()
-            return
-        def fn_7():
-            self.ditched_card_id = 7
-            self.ui_ditch_card()
-            return
-        def fn_8():
-            self.ditched_card_id = 8
-            self.ui_ditch_card()
-            return
-        def fn_9():
-            self.ditched_card_id = 9
-            self.ui_ditch_card()
-            return
-        def fn_10():
-            self.ditched_card_id = 10
-            self.ui_ditch_card()
-            return
-        def fn_11():
-            self.ditched_card_id = 11
-            self.ui_ditch_card()
-            return        
-        def fn_12():
-            self.ditched_card_id = 12
-            self.ui_ditch_card()
-            return        
-        def fn_13():
-            self.ditched_card_id = 13
-            self.ui_ditch_card()
-            return        
-        def fn_14():
-            self.ditched_card_id = 14
-            self.ui_ditch_card()
-            return
-        def fn_15():
-            self.ditched_card_id = 15
-            self.ui_ditch_card()
-            return        
-        def fn_16():
-            self.ditched_card_id = 16
-            self.ui_ditch_card()
-            return
 
-        self.ui.tile_0.clicked.connect(fn_0)
-        self.ui.tile_1.clicked.connect(fn_1)
-        self.ui.tile_2.clicked.connect(fn_2)
-        self.ui.tile_3.clicked.connect(fn_3)
-        self.ui.tile_4.clicked.connect(fn_4)
-
-        self.ui.tile_5.clicked.connect(fn_5)
-        self.ui.tile_6.clicked.connect(fn_6)
-        self.ui.tile_7.clicked.connect(fn_7)
-        self.ui.tile_8.clicked.connect(fn_8)
-        self.ui.tile_9.clicked.connect(fn_9)
-
-        self.ui.tile_10.clicked.connect(fn_10)
-        self.ui.tile_11.clicked.connect(fn_11)
-        self.ui.tile_12.clicked.connect(fn_12)
-        self.ui.tile_13.clicked.connect(fn_13)
-        self.ui.tile_14.clicked.connect(fn_14)
-        self.ui.tile_15.clicked.connect(fn_15)
-        self.ui.tile_16.clicked.connect(fn_16)
+    
 

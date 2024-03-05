@@ -1,2 +1,5 @@
-line-bot-sdk
-flask
+### UI
+PyQt6
+### if line bot
+# line-bot-sdk
+# flask
