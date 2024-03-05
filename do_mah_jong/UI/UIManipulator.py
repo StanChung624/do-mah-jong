@@ -1,9 +1,16 @@
 from typing import List
-from .BaseStructure import BaseStructure
+from .BaseStructure import BaseStructure, QtGui, QtCore
 from ..Basic.Deck import translate, translate_list
 from ..UI.UIPlayer import UIPlayer
 from ..UI.Status import Status
 
+def get_icon_name(card:str):
+    ret = "./do_mah_jong/icon/"
+    if card[0] == "X":
+        ret += "x" + card[1] + "_.jpg"
+    else:
+        ret += card + ".jpg"
+    return ret
 
 class UIManipulator(BaseStructure):
     def __init__(self) -> None:
@@ -27,8 +34,9 @@ class UIManipulator(BaseStructure):
 
     def tiles_on(action):
         def wrapper(self, ui_player:UIPlayer):
-            for tile in self.tiles:
-                tile.setEnabled(True)
+            if self.status == Status.to_ditch:
+                for tile in self.tiles:
+                    tile.setEnabled(True)            
             action(self ,ui_player)
         return wrapper
 
@@ -50,16 +58,21 @@ class UIManipulator(BaseStructure):
         for i in range(len(self.tiles)):
             if i < Nholding:          
                 card = ui_player.holding[i]
-                self.tiles[i].setText(translate(card))
+                #self.tiles[i].setText(translate(card))
+                self.tiles[i].setIcon(QtGui.QIcon(get_icon_name(card)))
+                self.tiles[i].setIconSize(QtCore.QSize(40,40))        
             else:
-                self.tiles[i].setText("")
+                self.tiles[i].setIcon(QtGui.QIcon())
                 self.tiles[i].setEnabled(False)
         for i in range(len(self.flws)):
             if i < Nflower:
                 card = ui_player.flower[i]
-                self.flws[i].setText(translate(card))
+                self.flws[i].setIcon(QtGui.QIcon(get_icon_name(card)))
+                self.flws[i].setIconSize(QtCore.QSize(40,40))
+                self.flws[i].setEnabled(True)
             else:
-                self.flws[i].setText("")
+                self.flws[i].setIcon(QtGui.QIcon())
+                self.flws[i].setEnabled(False)
 
     def __set_tiles_button(self)->None:
         self.tiles = list()        
