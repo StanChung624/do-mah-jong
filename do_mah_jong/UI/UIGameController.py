@@ -98,11 +98,13 @@ class UIGameConroller(GameControl, UIManipulator):
                     self.set_regame_button(self.setup_game)
                     return
                 self.user_ditch_card = player.ditch()
+                self.ui_com_discard_card(player, self.user_ditch_card)
                 self.log("player " + str(player.index) + " " + action + ", 打: " + translate(self.user_ditch_card))
                 self.players.reset(player)
                 return self.check_others_action()
     
         self.to_sea(card)
+        self.flush_sea()
         self.players.next()
         self.player_draw_card()
         return    
@@ -128,6 +130,7 @@ class UIGameConroller(GameControl, UIManipulator):
         card = player.last_draw        
         
         if type(player) is UIPlayer:
+            self.flush_sea()
             self.status = Status.to_ditch
             self.show_tiles(self.ui_player)
             self.tiles_on()
@@ -152,6 +155,7 @@ class UIGameConroller(GameControl, UIManipulator):
             
             card = player.ditch()
             self.user_ditch_card = card
+            self.ui_com_discard_card(player, self.user_ditch_card)
             self.log("player " + str(player.index) + ", 打: " + translate(self.user_ditch_card))
             self.check_others_action()
             return

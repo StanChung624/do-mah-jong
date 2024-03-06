@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1080</width>
-    <height>484</height>
+    <height>557</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -22,8 +22,8 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>62</x>
-     <y>364</y>
+     <x>61</x>
+     <y>414</y>
      <width>941</width>
      <height>84</height>
     </rect>
@@ -546,10 +546,10 @@
   <widget class="QLabel" name="copilot_msg">
    <property name="geometry">
     <rect>
-     <x>840</x>
-     <y>30</y>
+     <x>870</x>
+     <y>160</y>
      <width>130</width>
-     <height>201</height>
+     <height>141</height>
     </rect>
    </property>
    <property name="minimumSize">
@@ -558,15 +558,18 @@
      <height>50</height>
     </size>
    </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string>o_o</string>
    </property>
   </widget>
   <widget class="QLabel" name="text_env">
    <property name="geometry">
     <rect>
-     <x>830</x>
-     <y>260</y>
+     <x>870</x>
+     <y>300</y>
      <width>130</width>
      <height>45</height>
     </rect>
@@ -577,15 +580,18 @@
      <height>45</height>
     </size>
    </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string/>
    </property>
   </widget>
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>300</x>
-     <y>30</y>
+     <x>299</x>
+     <y>80</y>
      <width>511</width>
      <height>271</height>
     </rect>
@@ -1537,7 +1543,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -1764,8 +1770,8 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>320</y>
+     <x>79</x>
+     <y>370</y>
      <width>901</width>
      <height>40</height>
     </rect>
@@ -2032,15 +2038,15 @@
   <widget class="QLabel" name="message">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>40</y>
-     <width>221</width>
+     <x>90</x>
+     <y>90</y>
+     <width>141</width>
      <height>240</height>
     </rect>
    </property>
    <property name="minimumSize">
     <size>
-     <width>200</width>
+     <width>100</width>
      <height>240</height>
     </size>
    </property>
@@ -2051,13 +2057,52 @@
     </size>
    </property>
    <property name="autoFillBackground">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string>&lt;log&gt;</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="p1_discard">
+   <property name="geometry">
+    <rect>
+     <x>250</x>
+     <y>190</y>
+     <width>30</width>
+     <height>45</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="p2_discard">
+   <property name="geometry">
+    <rect>
+     <x>560</x>
+     <y>30</y>
+     <width>30</width>
+     <height>45</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="p3_discard">
+   <property name="geometry">
+    <rect>
+     <x>820</x>
+     <y>180</y>
+     <width>30</width>
+     <height>45</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
  </widget>

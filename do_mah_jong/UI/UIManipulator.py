@@ -1,8 +1,10 @@
 from typing import List
 from .BaseStructure import BaseStructure, QtGui, QtCore, QtWidgets
+
 from ..Basic.Deck import translate, translate_list
-from ..UI.UIPlayer import UIPlayer
+from ..UI.UIPlayer import UIPlayer, Player
 from ..UI.Status import Status
+from time import sleep
 
 def get_icon_name(card:str):
     ret = "./do_mah_jong/icon/"
@@ -13,16 +15,14 @@ def get_icon_name(card:str):
     return ret
 
 class UIManipulator(BaseStructure):
-    def __init__(self) -> None:
-        super().__init__()
-        
-        # sea messages control
-        self.sea_cards = list()        
-        
+
     def setupUi(self, Dialog):
         super().setupUi(Dialog)
         Dialog.setWindowTitle("do-mah-jong")
         Dialog.setWindowIcon(QtGui.QIcon(get_icon_name("o1")))
+        # sea messages control
+        self.sea_cards = list()
+        self.current_sea_index = 0
     
     def set_button_tiles(self):
         self.seas = self.__set_sea_button()
@@ -33,15 +33,18 @@ class UIManipulator(BaseStructure):
             flw.setText("")
         return
 
-    
     def to_sea(self, card:str):
-        self.sea_cards.append(card)
-        i = len(self.sea_cards) - 1
-        qpixmap = QtGui.QPixmap()
-        qpixmap = qpixmap.fromImage(QtGui.QImage(get_icon_name(card)))
-        qpixmap = qpixmap.scaled(30,40)
-        self.seas[i].setPixmap(qpixmap)
+        self.sea_cards.append(card)        
         
+    def flush_sea(self):
+        for i in range(self.current_sea_index, len(self.sea_cards)):
+            card = self.sea_cards[i]
+            qpixmap = QtGui.QPixmap()
+            qpixmap = qpixmap.fromImage(QtGui.QImage(get_icon_name(card)))
+            qpixmap = qpixmap.scaled(30,40)
+            self.seas[i].setPixmap(qpixmap)
+        self.current_sea_index = len(self.sea_cards)
+        self.ui_com_discard_card_clear()
 
     def reset_sea(self):
         self.sea_cards = list()
@@ -60,6 +63,31 @@ class UIManipulator(BaseStructure):
                     tile.setEnabled(True)            
             action(self ,ui_player)
         return wrapper
+    
+    def ui_com_discard_card(self, player:Player, card):
+        if player.index == 1:
+            label = self.p1_discard
+        elif player.index == 2:
+            label = self.p2_discard
+        elif player.index == 3:
+            label = self.p3_discard
+        
+        qpixmap = QtGui.QPixmap()
+        qpixmap = qpixmap.fromImage(QtGui.QImage(get_icon_name(card)))
+        qpixmap = qpixmap.scaled(30,40)
+        label.setPixmap(qpixmap)
+        QtCore.QCoreApplication.processEvents()
+        if player.index == 3:
+            sleep(1.5)
+            QtCore.QCoreApplication.processEvents()
+        else:
+            sleep(0.5)
+
+    def ui_com_discard_card_clear(self):
+        self.p1_discard.setPixmap(QtGui.QPixmap())
+        self.p2_discard.setPixmap(QtGui.QPixmap())
+        self.p3_discard.setPixmap(QtGui.QPixmap())
+        
 
     @tiles_on
     def show_tiles(self, ui_player:UIPlayer):
