@@ -138,9 +138,8 @@ class UIGameConroller(GameControl, UIManipulator):
 
             # for gan or self draw scenario
             player.holding.remove(card)
-            player.tracker[card] += 1
             player.see(card=card, player=player)
-            player.draw_card(card=card)
+            player.holding.append(card)
             if player.can_gan or player.can_win:               
                 self.set_self_act_button()
                 return

@@ -100,19 +100,26 @@ class Player():
             self.holding.remove(self.see_card)
     
     @_action_decorator
-    def gan(self, **kwargs):        
-        self.flower += [self.see_card]*4
-        for i in range(3):
-            self.holding.remove(self.see_card)      
-        self.draw_card(deck=self.deck)
-        self.amend_flower()
+    def gan(self, **kwargs):
+        if self.holding.count(self.see_card) == 3:
+            self.flower += [self.see_card]*4
+            while self.holding.count(self.see_card) > 0:
+                self.holding.remove(self.see_card)    
+            self.draw_card(deck=self.deck)
+            self.amend_flower()
+        elif self.holding.count(self.see_card) == 4:
+            self.flower += [self.see_card]*4
+            while self.holding.count(self.see_card) > 0:
+                self.holding.remove(self.see_card)
+             
+            
         
     @_action_decorator
     def self_gan(self, **kwargs):
         # hidden gan
         if self.holding.count(self.see_card) > 1:
             self.flower += [self.see_card]*4
-            for i in range(4):
+            while self.holding.count(self.see_card) > 0:
                 self.holding.remove(self.see_card)
             self.draw_card(deck=self.deck)
             self.amend_flower()
@@ -149,7 +156,6 @@ class Player():
         self.can_gan = False
         self.can_win = False
         self.__is_win = None
-        self.last_draw = ""
     
     def is_owner(self)->int:
         return self.owner    
@@ -250,13 +256,13 @@ class Player():
         ret = []
         
         # can pon or gan
-        if card in self.holding:
-            card_sum = dict()
-            for c in self.holding:
-                card_sum[c] = 0
-            for c in self.holding:
-                card_sum[c] += 1
+        card_sum = dict()
+        for c in self.holding:
+            card_sum[c] = 0
+        for c in self.holding:
+            card_sum[c] += 1
 
+        if card in self.holding:
             if card_sum[card] >= 2:
                 self.can_pon = True
                 # ret.append([card] * 3)
@@ -266,26 +272,47 @@ class Player():
         
         # can self gan
         if player_index == self.index:
+            # check for flower3 draw 1 gan scenario
             if self.see_card in self.flower:
                 in_flw_id = self.flower.index(self.see_card)
                 if len(self.flower) > in_flw_id + 2:
                     if self.flower[in_flw_id + 2] == self.see_card:
                         self.can_gan = True
 
+            # check for flower3 holding 1 gan scenario
+            for c in self.holding:
+                if c not in self.flower:
+                    continue
+                index = self.flower.index(c)
+                if self.flower.count(c) == 3:
+                    if len(self.flower) >= index + 2:
+                        if self.flower[index] == self.flower[index+1] and \
+                            self.flower[index] == self.flower[index+2]:
+                            self.see_card = c
+                            self.can_gan = True
+                            return
+
+            # check for holding 4 scenario
+            for c, cnt in card_sum.items():
+                if cnt == 4:
+                    self.see_card = c
+                    self.can_gan = True
+                    return
         
-        if card in Deck().l_list or card in Deck().m_list or card in Deck().o_list:
-            neighbor_card = get_neighbor(card)            
-            self.holding.append(card)
-            for i in range(len(neighbor_card)-2):
-                if neighbor_card[i] in self.holding and \
-                neighbor_card[i+1] in self.holding and \
-                neighbor_card[i+2] in self.holding:
-                    combination = neighbor_card[i:i+3]
-                    combination.remove(card)
-                    ret.append([combination[0], card, combination[1]])
-                    self.can_eat = is_upstream_player
-            
-            self.holding.remove(card)            
+        if is_upstream_player:
+            if card in Deck().l_list or card in Deck().m_list or card in Deck().o_list:
+                neighbor_card = get_neighbor(card)            
+                self.holding.append(card)
+                for i in range(len(neighbor_card)-2):
+                    if neighbor_card[i] in self.holding and \
+                    neighbor_card[i+1] in self.holding and \
+                    neighbor_card[i+2] in self.holding:
+                        combination = neighbor_card[i:i+3]
+                        combination.remove(card)
+                        ret.append([combination[0], card, combination[1]])
+                        self.can_eat = True
+                
+                self.holding.remove(card)            
 
         if card in self.listen():
             self.can_win = True

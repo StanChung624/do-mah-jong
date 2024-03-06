@@ -25,12 +25,10 @@ class UIManipulator(BaseStructure):
         self.current_sea_index = 0
     
     def set_button_tiles(self):
-        self.seas = self.__set_sea_button()
+        self.seas = self.__group_sea_button()
         self.__set_tiles_button()        
         for tile in self.tiles:
             tile.setText("")
-        for flw in self.flws:
-            flw.setText("")
         return
 
     def to_sea(self, card:str):
@@ -114,59 +112,34 @@ class UIManipulator(BaseStructure):
         for i in range(len(self.flws)):
             if i < Nflower:
                 card = ui_player.flower[i]
-                self.flws[i].setIcon(QtGui.QIcon(get_icon_name(card)))
-                self.flws[i].setIconSize(QtCore.QSize(40,40))
-                self.flws[i].setEnabled(True)
+                qpixmap = QtGui.QPixmap()
+                qpixmap = qpixmap.fromImage(QtGui.QImage(get_icon_name(card)))
+                qpixmap = qpixmap.scaled(30,40)
+                self.flws[i].setPixmap(qpixmap)
             else:
-                self.flws[i].setIcon(QtGui.QIcon())
-                self.flws[i].setEnabled(False)
+                self.flws[i].setPixmap(QtGui.QPixmap())
 
-    def __set_sea_button(self)->List[QtWidgets.QPushButton]:
+    def __group_sea_button(self)->List[QtWidgets.QLabel]:
         ret = list()
-        for i in range(60):
+        for i in range(65):
             eval("ret.append(self.sea_" + str(i) + ")")
+        return ret
+    
+    def __group_tiles_button(self)->List[QtWidgets.QPushButton]:
+        ret = list()
+        for i in range(17):
+            eval("ret.append(self.tile_" + str(i) + ")")
+        return ret
+    
+    def __group_flws_button(self)->List[QtWidgets.QLabel]:
+        ret = list()
+        for i in range(28):
+            eval("ret.append(self.flw_" + str(i) + ")")
         return ret
 
     def __set_tiles_button(self)->None:
-        self.tiles = list()
-        self.tiles.append(self.tile_0)
-        self.tiles.append(self.tile_1)
-        self.tiles.append(self.tile_2)
-        self.tiles.append(self.tile_3)
-        self.tiles.append(self.tile_4)
-        self.tiles.append(self.tile_5)
-        self.tiles.append(self.tile_6)
-        self.tiles.append(self.tile_7)
-        self.tiles.append(self.tile_8)
-        self.tiles.append(self.tile_9)
-        self.tiles.append(self.tile_10)
-        self.tiles.append(self.tile_11)
-        self.tiles.append(self.tile_12)
-        self.tiles.append(self.tile_13)
-        self.tiles.append(self.tile_14)
-        self.tiles.append(self.tile_15)
-        self.tiles.append(self.tile_16)
-
-        self.flws = list()
-        self.flws.append(self.flw_0)
-        self.flws.append(self.flw_1)
-        self.flws.append(self.flw_2)
-        self.flws.append(self.flw_3)
-        self.flws.append(self.flw_4)
-
-        self.flws.append(self.flw_5)
-        self.flws.append(self.flw_6)
-        self.flws.append(self.flw_7)
-        self.flws.append(self.flw_8)
-        self.flws.append(self.flw_9)
-
-        self.flws.append(self.flw_10)
-        self.flws.append(self.flw_11)
-        self.flws.append(self.flw_12)
-        self.flws.append(self.flw_13)
-        self.flws.append(self.flw_14)
-
-        self.flws.append(self.flw_15)      
+        self.tiles = self.__group_tiles_button()
+        self.flws = self.__group_flws_button()
 
         def ditch_card_action(self):
             self.tiles_off()
@@ -330,7 +303,13 @@ class UIManipulator(BaseStructure):
                 self.log("槓")
                 ui_player.gan()
                 self.log("補進了 " + translate(ui_player.last_draw))
-                self.button_gan.setEnabled(False)               
+                self.button_gan.setEnabled(False)
+                # check amended card
+                ui_player.tracker[ui_player.last_draw] += 1
+                ui_player.see(ui_player.last_draw, player=ui_player)
+                if ui_player.can_gan or ui_player.can_win:               
+                    self.set_self_act_button()
+                    return
                 self.reset_act_button()
                 self.status = Status.to_ditch
                 self.show_tiles(ui_player)
@@ -344,7 +323,13 @@ class UIManipulator(BaseStructure):
                 self.log("槓")
                 ui_player.self_gan()
                 self.log("補進了 " + translate(ui_player.last_draw))
-                self.button_gan.setEnabled(False)               
+                self.button_gan.setEnabled(False)
+                # check amended card
+                ui_player.tracker[ui_player.last_draw] += 1
+                ui_player.see(ui_player.last_draw, player=ui_player)
+                if ui_player.can_gan or ui_player.can_win:               
+                    self.set_self_act_button()
+                    return
                 self.reset_act_button()
                 self.status = Status.to_ditch
                 self.show_tiles(ui_player)
