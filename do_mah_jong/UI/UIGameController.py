@@ -40,7 +40,7 @@ class UIGameConroller(GameControl, UIManipulator):
         self.message.setText("")
 
         if self.status == Status.start_game:
-            self.deck = CustomDeck()
+            self.deck = Deck()
             for player in self.players_list:
                 player.reset()        
                 player.deck = self.deck

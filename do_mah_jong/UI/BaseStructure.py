@@ -9,6 +9,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 class BaseStructure(object):
+    
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(1080, 557)
@@ -168,7 +169,7 @@ class BaseStructure(object):
         self.text_env.setText("")
         self.text_env.setObjectName("text_env")
         self.groupBox = QtWidgets.QGroupBox(parent=Dialog)
-        self.groupBox.setGeometry(QtCore.QRect(299, 80, 511, 271))
+        self.groupBox.setGeometry(QtCore.QRect(299, 80, 521, 271))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(215, 240, 223))
         brush.setStyle(QtCore.Qt.BrushStyle.SolidPattern)
@@ -706,15 +707,18 @@ class BaseStructure(object):
         self.message.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeading|QtCore.Qt.AlignmentFlag.AlignLeft|QtCore.Qt.AlignmentFlag.AlignTop)
         self.message.setObjectName("message")
         self.p1_discard = QtWidgets.QLabel(parent=Dialog)
-        self.p1_discard.setGeometry(QtCore.QRect(250, 190, 30, 45))
+        self.p1_discard.setGeometry(QtCore.QRect(270, 190, 30, 45))
+        self.p1_discard.setAutoFillBackground(True)
         self.p1_discard.setText("")
         self.p1_discard.setObjectName("p1_discard")
         self.p2_discard = QtWidgets.QLabel(parent=Dialog)
-        self.p2_discard.setGeometry(QtCore.QRect(560, 30, 30, 45))
+        self.p2_discard.setGeometry(QtCore.QRect(540, 40, 30, 45))
+        self.p2_discard.setAutoFillBackground(True)
         self.p2_discard.setText("")
         self.p2_discard.setObjectName("p2_discard")
         self.p3_discard = QtWidgets.QLabel(parent=Dialog)
-        self.p3_discard.setGeometry(QtCore.QRect(820, 180, 30, 45))
+        self.p3_discard.setGeometry(QtCore.QRect(820, 200, 30, 45))
+        self.p3_discard.setAutoFillBackground(True)
         self.p3_discard.setText("")
         self.p3_discard.setObjectName("p3_discard")
 
@@ -763,6 +767,7 @@ class BaseStructure(object):
         self.flw_14.setText(_translate("Dialog", "flw_2"))
         self.flw_15.setText(_translate("Dialog", "flw_3"))
         self.message.setText(_translate("Dialog", "<log>"))
+
 
 if __name__ == "__main__":
     import sys
