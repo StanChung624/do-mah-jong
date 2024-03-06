@@ -75,11 +75,11 @@ class UIManipulator(BaseStructure):
         qpixmap = QtGui.QPixmap()
         qpixmap = qpixmap.fromImage(QtGui.QImage(get_icon_name(card)))
         qpixmap = qpixmap.scaled(30,40)
+        
         label.setPixmap(qpixmap)
         QtCore.QCoreApplication.processEvents()
         if player.index == 3:
-            sleep(1.5)
-            QtCore.QCoreApplication.processEvents()
+            sleep(1)
         else:
             sleep(0.5)
 
