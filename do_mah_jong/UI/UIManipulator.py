@@ -13,34 +13,40 @@ def get_icon_name(card:str):
     return ret
 
 class UIManipulator(BaseStructure):
-    def __init__(self) -> None:        
+    def __init__(self) -> None:
         super().__init__()
-
+        
         # sea messages control
         self.sea_cards = list()        
         
     def setupUi(self, Dialog):
-        super().setupUi(Dialog)        
+        super().setupUi(Dialog)
+        Dialog.setWindowTitle("do-mah-jong")
+        Dialog.setWindowIcon(QtGui.QIcon(get_icon_name("o1")))
     
     def set_button_tiles(self):
         self.seas = self.__set_sea_button()
-        self.__set_tiles_button()
+        self.__set_tiles_button()        
         for tile in self.tiles:
             tile.setText("")
         for flw in self.flws:
             flw.setText("")
         return
+
     
     def to_sea(self, card:str):
         self.sea_cards.append(card)
         i = len(self.sea_cards) - 1
-        self.seas[i].setIcon(QtGui.QIcon(get_icon_name(card)))
-        self.seas[i].setIconSize(QtCore.QSize(40,40))
+        qpixmap = QtGui.QPixmap()
+        qpixmap = qpixmap.fromImage(QtGui.QImage(get_icon_name(card)))
+        qpixmap = qpixmap.scaled(30,40)
+        self.seas[i].setPixmap(qpixmap)
+        
 
     def reset_sea(self):
         self.sea_cards = list()
         for sea in self.seas:
-            sea.setIcon(QtGui.QIcon())
+            sea.setPixmap(QtGui.QPixmap())
         return
     
     def tiles_off(self):
@@ -218,26 +224,12 @@ class UIManipulator(BaseStructure):
             self.user_ditch_card_id = 16
             ditch_card_action(self)
             return
-
-        self.tile_0.clicked.connect(fn_0)
-        self.tile_1.clicked.connect(fn_1)
-        self.tile_2.clicked.connect(fn_2)
-        self.tile_3.clicked.connect(fn_3)
-        self.tile_4.clicked.connect(fn_4)
-
-        self.tile_5.clicked.connect(fn_5)
-        self.tile_6.clicked.connect(fn_6)
-        self.tile_7.clicked.connect(fn_7)
-        self.tile_8.clicked.connect(fn_8)
-        self.tile_9.clicked.connect(fn_9)
-
-        self.tile_10.clicked.connect(fn_10)
-        self.tile_11.clicked.connect(fn_11)
-        self.tile_12.clicked.connect(fn_12)
-        self.tile_13.clicked.connect(fn_13)
-        self.tile_14.clicked.connect(fn_14)
-        self.tile_15.clicked.connect(fn_15)
-        self.tile_16.clicked.connect(fn_16)
+        
+        exec("i = 0\n"+
+            "for tile in self.tiles:\n"+
+            "\ttile.clicked.connect(eval('fn_'+str(i)))\n"+
+            "\ti+=1")
+        
 
     def set_button_eat(self, ui_player:UIPlayer):
             eat_combinations = ui_player.eat_combinations

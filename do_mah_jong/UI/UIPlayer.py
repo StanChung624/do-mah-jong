@@ -27,6 +27,5 @@ class UIPlayer(Player):
         if self.is_win():
             return ""
         thought = self.copilot_type(self)
-        print(thought.grades)
         return thought.best_ditch()
 

@@ -78,36 +78,42 @@ def check_txt(no_pair:List[str])->Tuple[List[str], Dict[str,int]]:
         if count < 3 and count != 0:
             return ret, None
     return ret, txt_map
-        
-def check_id(no_pair_n_txt:list, target:str, tri_count:int = 0):
 
-    def get_pure_num(no_pair_n_txt:list, target:str):
+def get_pure_num(no_pair_n_txt:list, target:str):
         ret = list()
         for card in no_pair_n_txt:
             if target in card:
                 ret.append(card.replace(target, ''))
         return ret
     
-    def remove_smallest_pon(pure_num, tri_count=0):        
-        if pure_num[0] == pure_num[1] and pure_num[1] == pure_num[2]:
-            tri_count+=1
-            return pure_num[3:], tri_count
-        else:
-            return pure_num, tri_count
+def remove_smallest_pon(pure_num, tri_count=0)->Tuple[List[str], int]:    
+    if pure_num[0] == pure_num[1] and pure_num[1] == pure_num[2]:
+        tri_count+=1
+        return pure_num[3:], tri_count
+    else:
+        return pure_num, tri_count
+    
+def remove_largest_pon(pure_num)->List[str]:
+    if pure_num[-1] == pure_num[-2] and pure_num[-2] == pure_num[-3]:
+        return pure_num[-3:]
+    else:
+        return pure_num
+    
+def remove_smallest_stt(pure_num:List[str])->List[str]:
+    if len(pure_num)==0:
+        return pure_num
+    first = pure_num[0]
+    second = str(int(pure_num[0])+1)
+    third = str(int(pure_num[0])+2)
+    if first in pure_num and second in pure_num and third in pure_num:
+        pure_num.remove(first)
+        pure_num.remove(second)
+        pure_num.remove(third)
+        return pure_num
+    else:
+        return pure_num
         
-    def remove_smallest_stt(pure_num:List[str]):
-        if len(pure_num)==0:
-            return pure_num
-        first = pure_num[0]
-        second = str(int(pure_num[0])+1)
-        third = str(int(pure_num[0])+2)
-        if first in pure_num and second in pure_num and third in pure_num:
-            pure_num.remove(first)
-            pure_num.remove(second)
-            pure_num.remove(third)
-            return pure_num
-        else:
-            return pure_num
+def check_id(no_pair_n_txt:list, target:str, tri_count:int = 0):
     
     pure_num = get_pure_num(no_pair_n_txt, target)
 

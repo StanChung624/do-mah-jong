@@ -3,10 +3,11 @@ from do_mah_jong.Basic import *
 from do_mah_jong.UI import *
 from do_mah_jong.COMStyle.PoPo import PoPo
 from do_mah_jong.COMStyle.Coward import Coward
+from do_mah_jong.COMStyle.Normal import Normal
 
 class DoMahJongLauncher():
 
-    def setupUi(self, Dialog):
+    def setupUi(self, Dialog):        
         self.game = UIGameConroller(Dialog)        
         self.game.button_eat.setText("start")
         self.game.button_eat.clicked.connect(self.set_up_game)
@@ -15,7 +16,7 @@ class DoMahJongLauncher():
         self.game.register_a_player(UIPlayer(is_owner=0, index=0, ui=self))
         self.game.register_a_player(COMPlayer(is_owner=-1, index=1))
         self.game.register_a_player(COMPlayer(is_owner=-1, index=2))
-        self.game.register_a_player(COMPlayer(is_owner=-1, index=3, strategy=PoPo))
+        self.game.register_a_player(COMPlayer(is_owner=-1, index=3))
         self.game.setup_game()
         
 

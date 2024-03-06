@@ -10,7 +10,7 @@ for card in test:
 
 thought = COMThoughtsBase(player)
 
-thought.base_ditch_to_listen(5)
+thought.base_remove_side_straight(5)
 print(thought.grades)
 
 print(is_win(test))

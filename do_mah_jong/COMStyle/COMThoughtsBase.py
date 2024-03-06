@@ -1,12 +1,12 @@
 from typing import List, Dict
 from do_mah_jong.Basic.Deck import Deck, is_text
 from do_mah_jong.Basic.Player import Player
-from do_mah_jong.Basic.CheckUtility import listen, get_neighbor, ditch_to_listen
+from do_mah_jong.Basic.CheckUtility import *
 
 class COMThoughtsBase():
     def __init__(self, player:Player)->None:
         self.index = player.index
-        self.holding = player.holding # current holding
+        self.holding = list(player.holding) # current holding
         self.tracker = player.tracker # all left cards count tracker
         self.seen_cards = player.seen_cards # other opponents played card        
 
@@ -18,7 +18,7 @@ class COMThoughtsBase():
         self.bias = self.__generate_bias()
         self.base_add_bias()
         
-
+                
     def __generate_grade(self)->Dict[str,int]:
         ret = dict()
         for card in self.holding:
@@ -125,6 +125,28 @@ class COMThoughtsBase():
                     if crd in self.grades.keys():
                         self.grades[crd] += (-point)*count
 
+    def base_remove_side_straight(self, point:int):
+        no_txt, _ = check_txt(self.holding)
+        check_type = ["l", "o", "m"]
+        for typ in check_type:
+            pure_num = get_pure_num(no_txt, typ)
+            if len(pure_num) < 3:
+                continue
+
+            no_pon = remove_smallest_pon(pure_num)[0]
+            while len(no_pon) >= 3:
+                stt_0 = no_pon[0]
+                stt_1 = str(int(no_pon[0]) + 1)
+                stt_2 = str(int(no_pon[0]) + 2)
+                if stt_1 in no_pon and stt_2 in no_pon:
+                    self.grades[typ + stt_0] += point
+                    self.grades[typ + stt_1] += point
+                    self.grades[typ + stt_2] += point
+                    no_pon.remove(stt_0)
+                    no_pon.remove(stt_1)
+                    no_pon.remove(stt_2)
+                    continue
+                break
 
     
 if __name__ == "__main__":
