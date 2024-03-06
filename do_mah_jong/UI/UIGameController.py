@@ -9,24 +9,13 @@ class UIGameConroller(GameControl, UIManipulator):
 
         self.setupUi(dialog)
         self.set_button_tiles()
-
-        # sea messages control
-        self.sea_messages = ""
-        self.sea_count = 0
+        
         self.user_ditch_card_id = -1
         self.user_ditch_card = ""
         self.flag_user_no_act = False
 
         self.status = Status.start_game
-        super().__init__(debug)        
-
-    def to_sea(self, card:str):
-        self.sea_count += 1
-        self.sea_messages += translate(card) + ", "
-        if self.sea_count % 20 == 0:
-            self.sea_messages += "\n"
-        self.sea.setText(self.sea_messages)
-    
+        super().__init__(debug)       
     
     def log(self, message: str, player: Player = None, end: str = "\n", announce: bool = True):
         super().log(message, player, end, announce)
@@ -43,8 +32,7 @@ class UIGameConroller(GameControl, UIManipulator):
         env = "風: " + translate(self.winds.current()) + " " + str(self.players.current_id()) + "\n"
         env += "連莊: " + str(self.players.current().is_owner())
         self.text_env.setText(env)
-        self.sea_messages = ""
-        self.to_sea("")
+        self.reset_sea()
 
     def setup_game(self):
         self.reset_act_button()

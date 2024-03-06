@@ -1,5 +1,5 @@
 from typing import List
-from .BaseStructure import BaseStructure, QtGui, QtCore
+from .BaseStructure import BaseStructure, QtGui, QtCore, QtWidgets
 from ..Basic.Deck import translate, translate_list
 from ..UI.UIPlayer import UIPlayer
 from ..UI.Status import Status
@@ -13,20 +13,35 @@ def get_icon_name(card:str):
     return ret
 
 class UIManipulator(BaseStructure):
-    def __init__(self) -> None:
+    def __init__(self) -> None:        
         super().__init__()
+
+        # sea messages control
+        self.sea_cards = list()        
         
     def setupUi(self, Dialog):
         super().setupUi(Dialog)        
     
     def set_button_tiles(self):
+        self.seas = self.__set_sea_button()
         self.__set_tiles_button()
         for tile in self.tiles:
             tile.setText("")
         for flw in self.flws:
             flw.setText("")
         return
-        
+    
+    def to_sea(self, card:str):
+        self.sea_cards.append(card)
+        i = len(self.sea_cards) - 1
+        self.seas[i].setIcon(QtGui.QIcon(get_icon_name(card)))
+        self.seas[i].setIconSize(QtCore.QSize(40,40))
+
+    def reset_sea(self):
+        self.sea_cards = list()
+        for sea in self.seas:
+            sea.setIcon(QtGui.QIcon())
+        return
     
     def tiles_off(self):
         for tile in self.tiles:
@@ -60,7 +75,7 @@ class UIManipulator(BaseStructure):
                 card = ui_player.holding[i]
                 #self.tiles[i].setText(translate(card))
                 self.tiles[i].setIcon(QtGui.QIcon(get_icon_name(card)))
-                self.tiles[i].setIconSize(QtCore.QSize(40,40))        
+                self.tiles[i].setIconSize(QtCore.QSize(40,40))
             else:
                 self.tiles[i].setIcon(QtGui.QIcon())
                 self.tiles[i].setEnabled(False)
@@ -74,8 +89,14 @@ class UIManipulator(BaseStructure):
                 self.flws[i].setIcon(QtGui.QIcon())
                 self.flws[i].setEnabled(False)
 
+    def __set_sea_button(self)->List[QtWidgets.QPushButton]:
+        ret = list()
+        for i in range(60):
+            eval("ret.append(self.sea_" + str(i) + ")")
+        return ret
+
     def __set_tiles_button(self)->None:
-        self.tiles = list()        
+        self.tiles = list()
         self.tiles.append(self.tile_0)
         self.tiles.append(self.tile_1)
         self.tiles.append(self.tile_2)
