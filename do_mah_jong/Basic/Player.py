@@ -271,7 +271,7 @@ class Player():
         if player_index == self.index:
             if self.see_card in self.flower:
                 in_flw_id = self.flower.index(self.see_card)
-                if len(self.flower) >= in_flw_id + 2:
+                if len(self.flower) > in_flw_id + 2:
                     if self.flower[in_flw_id + 2] == self.see_card:
                         self.can_gan = True
 

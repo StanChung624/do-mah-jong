@@ -32,16 +32,16 @@ class COMPlayer(Player):
                 print("[auto] eat", end=" ")
             self.eat(formation=self.eat_formation_advisor())
             return "eat"
-        elif self.can_pon:
-            if announce:
-                print("[auto] pon", end=" ")
-            self.pon()
-            return "pon"
         elif self.can_gan:
             if announce:
                 print("[auto] gan", end=" ")
             self.gan()
             return "gan"
+        elif self.can_pon:
+            if announce:
+                print("[auto] pon", end=" ")
+            self.pon()
+            return "pon"
         else:
             return None
 
