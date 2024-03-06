@@ -149,6 +149,7 @@ class Player():
         self.can_gan = False
         self.can_win = False
         self.__is_win = None
+        self.last_draw = ""
     
     def is_owner(self)->int:
         return self.owner    
@@ -168,13 +169,11 @@ class Player():
             if announce:
                 print("draw", card)
             self.last_draw = card
-            self.holding.sort()
             return card
         elif deck:
             card = deck.serve()
             if card:
-                self.holding.append(card)            
-                self.holding.sort()
+                self.holding.append(card)
                 self.tracker[card] -= 1
                 self.see_card = card
                 if announce:
@@ -184,7 +183,6 @@ class Player():
             else:
                 return None
 
-    @_sort
     def amend_flower(self, *args, **kwargs):
         deck = kwargs.setdefault("deck", self.deck)
         if not deck:
@@ -201,11 +199,10 @@ class Player():
         else:
             self.flower.append(f_card)
             self.holding.remove(f_card)
+            self._sort()
             self.draw_card(deck=deck)
             return self.amend_flower()
         
-
-    @_sort
     def is_win(self, ignore_pair:bool=False):
         if self.__is_win is None:
             self.__is_win = is_win(self.holding)

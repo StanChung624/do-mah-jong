@@ -131,8 +131,12 @@ def check_id(no_pair_n_txt:list, target:str, tri_count:int = 0):
         
     return True, tri_count
 
-def is_win(holding, ignore_pair:bool=False):
-        
+def is_win(holding:List[str], ignore_pair:bool=False)->bool:
+        """
+        return whether the input holding is win.
+        ignore_pair: to ignore the paire cards in win condition
+        """
+        holding = list(holding)
         combinations = comb_remove_pair(holding)
 
         if (len(combinations)==0) and not ignore_pair:

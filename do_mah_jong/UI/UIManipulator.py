@@ -274,6 +274,7 @@ class UIManipulator(BaseStructure):
             eat_combinations = ui_player.eat_combinations
 
             def show_eat_combination():
+                self.log("吃")
                 if len(eat_combinations) >= 1:
                     def ui_eat_0():                        
                         ui_player.eat(formation=eat_combinations[0])
@@ -313,6 +314,7 @@ class UIManipulator(BaseStructure):
 
     def set_button_pon(self, ui_player:UIPlayer):
         def ui_pon():
+                self.log("碰")
                 ui_player.pon()
                 self.button_pon.setEnabled(False)
                 self.status = Status.to_ditch
@@ -325,6 +327,7 @@ class UIManipulator(BaseStructure):
 
     def set_button_gan(self, ui_player:UIPlayer):
         def ui_gan():
+                self.log("槓")
                 ui_player.gan()
                 self.log("補進了 " + translate(ui_player.last_draw))
                 self.button_gan.setEnabled(False)               
@@ -338,6 +341,7 @@ class UIManipulator(BaseStructure):
 
     def set_button_self_gan(self, ui_player:UIPlayer):
         def ui_self_gan():
+                self.log("槓")
                 ui_player.self_gan()
                 self.log("補進了 " + translate(ui_player.last_draw))
                 self.button_gan.setEnabled(False)               
