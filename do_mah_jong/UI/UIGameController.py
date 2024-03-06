@@ -40,7 +40,7 @@ class UIGameConroller(GameControl, UIManipulator):
         self.message.setText("")
 
         if self.status == Status.start_game:
-            self.deck = Deck()
+            self.deck = CustomDeck()
             for player in self.players_list:
                 player.reset()        
                 player.deck = self.deck
@@ -139,8 +139,8 @@ class UIGameConroller(GameControl, UIManipulator):
             # for gan or self draw scenario
             player.holding.remove(card)
             player.tracker[card] += 1
-            player.see(card=card)
-            player.draw_card(card=card)            
+            player.see(card=card, player=player)
+            player.draw_card(card=card)
             if player.can_gan or player.can_win:               
                 self.set_self_act_button()
                 return

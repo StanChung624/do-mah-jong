@@ -100,20 +100,32 @@ class Player():
             self.holding.remove(self.see_card)
     
     @_action_decorator
-    def gan(self, **kwargs):
+    def gan(self, **kwargs):        
         self.flower += [self.see_card]*4
         for i in range(3):
             self.holding.remove(self.see_card)      
         self.draw_card(deck=self.deck)
         self.amend_flower()
-
+        
     @_action_decorator
     def self_gan(self, **kwargs):
-        self.flower += [self.see_card]*4
-        for i in range(4):
-            self.holding.remove(self.see_card)
-        self.draw_card(deck=self.deck)
-        self.amend_flower()
+        # hidden gan
+        if self.holding.count(self.see_card) > 1:
+            self.flower += [self.see_card]*4
+            for i in range(4):
+                self.holding.remove(self.see_card)
+            self.draw_card(deck=self.deck)
+            self.amend_flower()
+        # out gan
+        else:
+            gan_card = self.see_card
+            for i in range(3):
+                self.flower.remove(gan_card)
+            for i in range(4):
+                self.flower.append(gan_card)
+            self.draw_card(deck=self.deck)
+            self.holding.remove(gan_card)
+            self.amend_flower()
 
     @_action_decorator
     def win(self, **kwargs):
@@ -233,13 +245,14 @@ class Player():
             is_upstream_player = (self.index + 3) % 4 == player_index
 
         self.see_card = card
-        if player_index is not None:
+        if player_index is not None and player_index != self.index:
             self.seen_cards[player_index][card] += 1
         self.tracker[card] -= 1
 
         # return in-take combination
         ret = []
         
+        # can pon or gan
         if card in self.holding:
             card_sum = dict()
             for c in self.holding:
@@ -254,6 +267,14 @@ class Player():
                 self.can_gan = True
                 # ret.append([card] * 4)
         
+        # can self gan
+        if player_index == self.index:
+            if self.see_card in self.flower:
+                in_flw_id = self.flower.index(self.see_card)
+                if len(self.flower) >= in_flw_id + 2:
+                    if self.flower[in_flw_id + 2] == self.see_card:
+                        self.can_gan = True
+
         
         if card in Deck().l_list or card in Deck().m_list or card in Deck().o_list:
             neighbor_card = get_neighbor(card)            
