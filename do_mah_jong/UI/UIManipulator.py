@@ -63,10 +63,9 @@ class UIManipulator(BaseStructure):
 
     @tiles_on
     def show_tiles(self, ui_player:UIPlayer):
-
         if self.status == Status.to_ditch:
             self.copilot_msg.setText(
-                "o_o:\n我是會丟 " + translate(self.ui_player.copilot()) + " 啦"
+                "o_o:\n我是會丟 " + translate(ui_player.copilot()) + " 啦"
             )
         else:
             self.copilot_msg.setText(
@@ -74,7 +73,6 @@ class UIManipulator(BaseStructure):
             )
 
         Nholding = len(ui_player.holding)
-        ui_player.holding.sort()
         Nflower = len(ui_player.flower)
         for i in range(len(self.tiles)):
             if i < Nholding:          
@@ -108,19 +106,16 @@ class UIManipulator(BaseStructure):
         self.tiles.append(self.tile_2)
         self.tiles.append(self.tile_3)
         self.tiles.append(self.tile_4)
-
         self.tiles.append(self.tile_5)
         self.tiles.append(self.tile_6)
         self.tiles.append(self.tile_7)
         self.tiles.append(self.tile_8)
         self.tiles.append(self.tile_9)
-
         self.tiles.append(self.tile_10)
         self.tiles.append(self.tile_11)
         self.tiles.append(self.tile_12)
         self.tiles.append(self.tile_13)
         self.tiles.append(self.tile_14)
-
         self.tiles.append(self.tile_15)
         self.tiles.append(self.tile_16)
 
@@ -225,10 +220,26 @@ class UIManipulator(BaseStructure):
             ditch_card_action(self)
             return
         
-        exec("i = 0\n"+
-            "for tile in self.tiles:\n"+
-            "\ttile.clicked.connect(eval('fn_'+str(i)))\n"+
-            "\ti+=1")
+        self.tile_0.clicked.connect(fn_0)
+        self.tile_1.clicked.connect(fn_1)
+        self.tile_2.clicked.connect(fn_2)
+        self.tile_3.clicked.connect(fn_3)
+        self.tile_4.clicked.connect(fn_4)
+
+        self.tile_5.clicked.connect(fn_5)
+        self.tile_6.clicked.connect(fn_6)
+        self.tile_7.clicked.connect(fn_7)
+        self.tile_8.clicked.connect(fn_8)
+        self.tile_9.clicked.connect(fn_9)
+
+        self.tile_10.clicked.connect(fn_10)
+        self.tile_11.clicked.connect(fn_11)
+        self.tile_12.clicked.connect(fn_12)
+        self.tile_13.clicked.connect(fn_13)
+        self.tile_14.clicked.connect(fn_14)
+        self.tile_15.clicked.connect(fn_15)
+        self.tile_16.clicked.connect(fn_16)
+
         
 
     def set_button_eat(self, ui_player:UIPlayer):

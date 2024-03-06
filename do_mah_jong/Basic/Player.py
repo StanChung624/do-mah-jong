@@ -156,11 +156,13 @@ class Player():
             if announce:
                 print("draw", card)
             self.last_draw = card
+            self.holding.sort()
             return card
         elif deck:
             card = deck.serve()
             if card:
                 self.holding.append(card)            
+                self.holding.sort()
                 self.tracker[card] -= 1
                 self.see_card = card
                 if announce:
@@ -271,6 +273,7 @@ class Player():
             self.can_win = True
 
         self.eat_combinations = ret
+        self.holding.sort()
 
     @_sort
     def listen(self):

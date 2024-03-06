@@ -38,7 +38,7 @@ class UIGameConroller(GameControl, UIManipulator):
         self.reset_act_button()
         self._log = list()
         self.message.setText("")
-        
+
         if self.status == Status.start_game:
             self.deck = Deck()
             for player in self.players_list:
@@ -83,7 +83,7 @@ class UIGameConroller(GameControl, UIManipulator):
             elif self.flag_user_no_act:
                 continue
             elif type(player) is UIPlayer and can_act:
-                self.status = Status.to_act
+                self.status = Status.to_act                
                 self.show_tiles(self.ui_player)
                 self.set_act_button()
                 return
@@ -137,22 +137,23 @@ class UIGameConroller(GameControl, UIManipulator):
             player.holding.remove(card)
             player.tracker[card] += 1
             player.see(card=card)
-            player.draw_card(card=card)
+            player.draw_card(card=card)            
             if player.can_gan or player.can_win:               
                 self.set_self_act_button()
                 return
 
-        else:            
+        else:
+            if player.is_win():
+                self.log("player " + str(player.index) + " 胡啦! (自摸)", player = player)
+                self._environment_update()
+                self.status = Status.start_game
+                self.set_regame_button(self.setup_game)
+                return
+            
             card = player.ditch()
             self.user_ditch_card = card
             self.log("player " + str(player.index) + ", 打: " + translate(self.user_ditch_card))
             self.check_others_action()
-
-        if player.is_win():
-            self.log("player " + str(player.index) + " 胡啦! (自摸)", player = player)
-            self._environment_update()
-            self.status = Status.start_game
-            self.set_regame_button(self.setup_game)
             return
     
     def set_act_button(self):        
