@@ -20,11 +20,11 @@ class UIGameConroller(GameControl, UIManipulator):
     def log(self, message: str, player: Player = None, end: str = "\n", announce: bool = True):
         super().log(message, player, end, announce)
         msg = ""
-        if len(self._log) < 15:
+        if len(self._log) < 10:
             for log_ in self._log:
                 msg += log_
         else:
-            for log_ in self._log[-15:]:
+            for log_ in self._log[-10:]:
                 msg += log_
         self.message.setText(msg)
 

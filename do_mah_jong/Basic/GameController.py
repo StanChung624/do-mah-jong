@@ -79,7 +79,8 @@ class GameControl():
             player = self.players_list[i]
             if player.is_win():
                 win = i
-        owner = self.crrnt_id.current_id()            
+                
+        owner = self.crrnt_id.current_id()
                 
         if win == owner or win < 0:
             self.players_list[owner].owner += 1

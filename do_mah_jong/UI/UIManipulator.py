@@ -107,7 +107,7 @@ class UIManipulator(BaseStructure):
             rotate = 90
         elif player.index == 3:
             rotate = 270
-        self.actions[player.index].setPixmap(get_qpmap(action, rotate=rotate, size=[45,45]))
+        self.actions[player.index].setPixmap(get_qpmap(action, rotate=rotate, size=[40,40]))
         QtCore.QCoreApplication.processEvents()
 
     def reset_action(self):
@@ -406,13 +406,13 @@ class UIManipulator(BaseStructure):
 
     def set_button_win(self, ui_player:UIPlayer):
         def action():
-            self._environment_update()
+            ui_player.win()
             if self.players.current().index == ui_player.index:
                 self.log("player " + str(ui_player.index) + " 胡啦! (自摸)")            
-            ui_player.win()
             self.show_action("win", ui_player)
             self.show_tiles(ui_player)
             self.status = Status.start_game
+            self._environment_update()
             self.set_regame_button(self.setup_game)
             return 
         self.button_win.setEnabled(True)
