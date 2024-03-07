@@ -126,10 +126,14 @@ class Player():
         # out gan
         else:
             gan_card = self.see_card
-            for i in range(3):
-                self.flower.remove(gan_card)
-            for i in range(4):
-                self.flower.append(gan_card)
+            id = self.flower.index(gan_card)
+            if len(self.flower) > id + 3:
+                self.flower = self.flower[0:id] +\
+                    [gan_card]*4 + self.flower[id+3:]
+            else:
+                self.flower = self.flower[0:id] +\
+                    [gan_card]*4 
+            
             self.draw_card(deck=self.deck)
             self.holding.remove(gan_card)
             self.amend_flower()

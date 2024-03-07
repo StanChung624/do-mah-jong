@@ -336,6 +336,8 @@ class UIManipulator(BaseStructure):
                 self.log("補進了 " + translate(ui_player.last_draw))
                 self.button_gan.setEnabled(False)
                 # check amended card
+                self.show_tiles(ui_player)
+                QtCore.QCoreApplication.processEvents()
                 ui_player.tracker[ui_player.last_draw] += 1
                 ui_player.see(ui_player.last_draw, player=ui_player)
                 if ui_player.can_gan or ui_player.can_win:               
@@ -343,8 +345,6 @@ class UIManipulator(BaseStructure):
                     return
                 self.reset_act_button()
                 self.status = Status.to_ditch
-                self.show_tiles(ui_player)
-                QtCore.QCoreApplication.processEvents()
                 return
 
         self.button_gan.setEnabled(True)
