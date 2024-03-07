@@ -4,7 +4,7 @@ from do_mah_jong.Basic.Deck import Deck
 from do_mah_jong.Basic.Player import Player
 from do_mah_jong.Basic.CheckUtility import *
 from do_mah_jong.COMStyle.COMThoughtsBase import COMThoughtsBase 
-from do_mah_jong.COMStyle.NoBrainWin import NoBrainWin
+from do_mah_jong.COMStyle.COMStyle import *
 
 class COMPlayer(Player):    
 

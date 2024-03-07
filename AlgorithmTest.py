@@ -1,6 +1,5 @@
 from do_mah_jong.Basic import *
-from do_mah_jong.COMStyle.PoPo import PoPo
-from do_mah_jong.COMStyle.Coward import Coward
+from do_mah_jong.COMStyle.COMStyle import *
 from multiprocessing import Pool
 
 
