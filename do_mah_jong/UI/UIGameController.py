@@ -67,6 +67,7 @@ class UIGameConroller(GameControl, UIManipulator):
             for player in self.players:
                 player.amend_flower()
             
+            self.show_tiles(self.ui_player)
             self.player_draw_card()
 
     def check_others_action(self):
@@ -89,7 +90,7 @@ class UIGameConroller(GameControl, UIManipulator):
                 return
             
             action = player.action()
-            if action:
+            if action:                
                 if player.is_win():
                     self.log("player " + str(player.index) + " 胡啦!" +
                               " (player " + str(self.players.current().index) + " 放槍)", player = player)
@@ -98,6 +99,7 @@ class UIGameConroller(GameControl, UIManipulator):
                     self.set_regame_button(self.setup_game)
                     return
                 self.user_ditch_card = player.ditch()
+                self.ui_com_discard_card_clear()
                 self.ui_com_discard_card(player, self.user_ditch_card)
                 self.log("player " + str(player.index) + " " + action + ", 打: " + translate(self.user_ditch_card))
                 self.players.reset(player)
@@ -183,7 +185,7 @@ class UIGameConroller(GameControl, UIManipulator):
         if self.ui_player.can_gan:
             self.set_button_self_gan(self.ui_player)
         if self.ui_player.can_win:
-            self.set_button_win(self.ui_player)            
+            self.set_button_self_win(self.ui_player)            
 
 
     

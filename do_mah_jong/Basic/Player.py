@@ -276,7 +276,8 @@ class Player():
             if self.see_card in self.flower:
                 in_flw_id = self.flower.index(self.see_card)
                 if len(self.flower) > in_flw_id + 2:
-                    if self.flower[in_flw_id + 2] == self.see_card:
+                    if self.flower[in_flw_id + 2] == self.see_card and\
+                        self.flower[in_flw_id + 1] == self.see_card:
                         self.can_gan = True
 
             # check for flower3 holding 1 gan scenario

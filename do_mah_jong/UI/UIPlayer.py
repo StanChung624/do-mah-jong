@@ -2,7 +2,7 @@ from typing import Dict
 from do_mah_jong.Basic.CheckUtility import Deck, Dict, List
 from do_mah_jong.Basic.Deck import Deck
 from do_mah_jong.Basic.Player import Player
-from do_mah_jong.COMStyle.Normal import Normal, COMThoughtsBase
+from do_mah_jong.COMStyle.COMStyle import Normal, COMThoughtsBase
 from time import sleep
 
 class UIPlayer(Player):

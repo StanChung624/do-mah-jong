@@ -45,6 +45,7 @@ class UIManipulator(BaseStructure):
         self.ui_com_discard_card_clear()
 
     def reset_sea(self):
+        self.current_sea_index = 0
         self.sea_cards = list()
         for sea in self.seas:
             sea.setPixmap(QtGui.QPixmap())
@@ -77,14 +78,15 @@ class UIManipulator(BaseStructure):
         label.setPixmap(qpixmap)
         QtCore.QCoreApplication.processEvents()
         if player.index == 3:
-            sleep(1)
+            sleep(0.8)
         else:
-            sleep(0.5)
+            sleep(0.8)
 
     def ui_com_discard_card_clear(self):
         self.p1_discard.setPixmap(QtGui.QPixmap())
         self.p2_discard.setPixmap(QtGui.QPixmap())
         self.p3_discard.setPixmap(QtGui.QPixmap())
+        QtCore.QCoreApplication.processEvents()
         
 
     @tiles_on
@@ -333,6 +335,7 @@ class UIManipulator(BaseStructure):
                 self.reset_act_button()
                 self.status = Status.to_ditch
                 self.show_tiles(ui_player)
+                QtCore.QCoreApplication.processEvents()
                 return
 
         self.button_gan.setEnabled(True)
@@ -342,6 +345,20 @@ class UIManipulator(BaseStructure):
         def action():
             if self.players.current().index == ui_player.index:
                 self.log("player " + str(ui_player.index) + " 胡啦! (自摸)")            
+            ui_player.win()
+            self._environment_update()
+            self.show_tiles(ui_player)
+            self.status = Status.start_game
+            self.set_regame_button(self.setup_game)
+            return 
+        self.button_win.setEnabled(True)
+        self.button_win.clicked.connect(action)
+
+    def set_button_self_win(self, ui_player:UIPlayer):
+        def action():
+            if self.players.current().index == ui_player.index:
+                self.log("player " + str(ui_player.index) + " 胡啦! (自摸)")
+            ui_player.holding.remove(ui_player.see_card)
             ui_player.win()
             self._environment_update()
             self.show_tiles(ui_player)
