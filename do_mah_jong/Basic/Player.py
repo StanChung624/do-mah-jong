@@ -268,6 +268,9 @@ class Player():
                 self.can_gan = True
                 # ret.append([card] * 4)
         
+        if card in self.listen():
+            self.can_win = True
+            
         # can self gan
         if player_index == self.index:
             # check for flower3 draw 1 gan scenario
@@ -312,9 +315,6 @@ class Player():
                         self.can_eat = True
                 
                 self.holding.remove(card)            
-
-        if card in self.listen():
-            self.can_win = True
 
         self.eat_combinations = ret
         self.holding.sort()

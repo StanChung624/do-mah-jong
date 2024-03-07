@@ -14,6 +14,17 @@ def get_icon_name(card:str):
         ret += card + ".jpg"
     return ret
 
+def get_qpmap(card:str, size:List[int]=[30,40], rotate:int=0):
+    if card == "":
+        return QtGui.QPixmap()
+    qpixmap = QtGui.QPixmap()
+    qpixmap = qpixmap.fromImage(QtGui.QImage(get_icon_name(card)))
+    if rotate != 0:
+        tfm = QtGui.QTransform().rotate(rotate)
+        qpixmap = qpixmap.transformed(tfm)
+        return qpixmap.scaled(size[1], size[0])
+    return qpixmap.scaled(size[0], size[1])
+
 class UIManipulator(BaseStructure):
 
     def setupUi(self, Dialog):
@@ -26,11 +37,12 @@ class UIManipulator(BaseStructure):
     
     def set_button_tiles(self):
         self.seas = self.__group_sea_button()
+        self.actions = self.__group_action_button()
         self.__set_tiles_button()        
         for tile in self.tiles:
             tile.setText("")
         return
-
+   
     def to_sea(self, card:str):
         self.sea_cards.append(card)        
         
@@ -88,6 +100,46 @@ class UIManipulator(BaseStructure):
         self.p3_discard.setPixmap(QtGui.QPixmap())
         QtCore.QCoreApplication.processEvents()
         
+    def show_action(self, action:str, player:Player):
+        rotate = 0
+        rotate = 0
+        if player.index == 1:
+            rotate = 90
+        elif player.index == 3:
+            rotate = 270
+        self.actions[player.index].setPixmap(get_qpmap(action, rotate=rotate, size=[45,45]))
+        QtCore.QCoreApplication.processEvents()
+
+    def reset_action(self):
+        for act in self.actions:
+            act.setPixmap(get_qpmap(""))
+
+
+    def show_flowers(self, player:Player):        
+        ids = player.index * 28
+        x_flws = self.flws[ids:ids+8]
+        e_flws = self.flws[ids+8:ids+28]
+        x_cnt = 0
+        e_cnt = 0
+        rotate = 0
+        if player.index == 1:
+            rotate = 90
+        elif player.index == 3:
+            rotate = 270
+        
+        for flw in player.flower:
+            if "x" in flw or "X" in flw:
+                x_flws[x_cnt].setPixmap(get_qpmap(flw, rotate=rotate))
+                x_cnt +=1
+            else:
+                e_flws[e_cnt].setPixmap(get_qpmap(flw, rotate=rotate))
+                e_cnt +=1
+            
+        for i in range(x_cnt, 8):
+            x_flws[i].setPixmap(get_qpmap(""))
+        for i in range(e_cnt, 20):
+            e_flws[i].setPixmap(get_qpmap(""))
+        QtCore.QCoreApplication.processEvents()
 
     @tiles_on
     def show_tiles(self, ui_player:UIPlayer):
@@ -111,20 +163,19 @@ class UIManipulator(BaseStructure):
             else:
                 self.tiles[i].setIcon(QtGui.QIcon())
                 self.tiles[i].setEnabled(False)
-        for i in range(len(self.flws)):
-            if i < Nflower:
-                card = ui_player.flower[i]
-                qpixmap = QtGui.QPixmap()
-                qpixmap = qpixmap.fromImage(QtGui.QImage(get_icon_name(card)))
-                qpixmap = qpixmap.scaled(30,40)
-                self.flws[i].setPixmap(qpixmap)
-            else:
-                self.flws[i].setPixmap(QtGui.QPixmap())
+        self.show_flowers(ui_player)
+        QtCore.QCoreApplication.processEvents()
 
     def __group_sea_button(self)->List[QtWidgets.QLabel]:
         ret = list()
         for i in range(65):
             eval("ret.append(self.sea_" + str(i) + ")")
+        return ret
+ 
+    def __group_action_button(self)->List[QtWidgets.QLabel]:
+        ret = list()
+        for i in range(4):
+            eval("ret.append(self.action_" + str(i) + ")")
         return ret
     
     def __group_tiles_button(self)->List[QtWidgets.QPushButton]:
@@ -135,7 +186,7 @@ class UIManipulator(BaseStructure):
     
     def __group_flws_button(self)->List[QtWidgets.QLabel]:
         ret = list()
-        for i in range(28):
+        for i in range(112):
             eval("ret.append(self.flw_" + str(i) + ")")
         return ret
 
@@ -254,6 +305,7 @@ class UIManipulator(BaseStructure):
 
             def show_eat_combination():
                 self.log("吃")
+                self.show_action("eat", ui_player)
                 if len(eat_combinations) >= 1:
                     def ui_eat_0():                        
                         ui_player.eat(formation=eat_combinations[0])
@@ -296,35 +348,37 @@ class UIManipulator(BaseStructure):
 
     def set_button_pon(self, ui_player:UIPlayer):
         def ui_pon():
-                self.log("碰")
-                ui_player.pon()
-                self.let_others_see()
-                self.button_pon.setEnabled(False)
-                self.status = Status.to_ditch
-                self.show_tiles(ui_player)
-                self.reset_act_button()
-                return
+            self.show_action("pon", ui_player)
+            self.log("碰")
+            ui_player.pon()
+            self.let_others_see()
+            self.button_pon.setEnabled(False)
+            self.status = Status.to_ditch
+            self.show_tiles(ui_player)
+            self.reset_act_button()
+            return
 
         self.button_pon.setEnabled(True)
         self.button_pon.clicked.connect(ui_pon)
 
     def set_button_gan(self, ui_player:UIPlayer):
         def ui_gan():
-                self.log("槓")
-                ui_player.gan()
-                self.let_others_see()
-                self.log("補進了 " + translate(ui_player.last_draw))
-                self.button_gan.setEnabled(False)
-                # check amended card
-                ui_player.tracker[ui_player.last_draw] += 1
-                ui_player.see(ui_player.last_draw, player=ui_player)
-                if ui_player.can_gan or ui_player.can_win:               
-                    self.set_self_act_button()
-                    return
-                self.reset_act_button()
-                self.status = Status.to_ditch
-                self.show_tiles(ui_player)
+            self.log("槓")
+            self.show_action("gan", ui_player)
+            ui_player.gan()
+            self.let_others_see()
+            self.log("補進了 " + translate(ui_player.last_draw))
+            self.button_gan.setEnabled(False)
+            # check amended card
+            ui_player.tracker[ui_player.last_draw] += 1
+            ui_player.see(ui_player.last_draw, player=ui_player)
+            if ui_player.can_gan or ui_player.can_win:               
+                self.set_self_act_button()
                 return
+            self.reset_act_button()
+            self.status = Status.to_ditch
+            self.show_tiles(ui_player)
+            return
 
         self.button_gan.setEnabled(True)
         self.button_gan.clicked.connect(ui_gan)
@@ -332,17 +386,17 @@ class UIManipulator(BaseStructure):
     def set_button_self_gan(self, ui_player:UIPlayer):
         def ui_self_gan():
                 self.log("槓")
+                self.show_action("gan", ui_player)
                 ui_player.self_gan()
                 self.log("補進了 " + translate(ui_player.last_draw))
                 self.button_gan.setEnabled(False)
                 # check amended card
                 self.show_tiles(ui_player)
                 QtCore.QCoreApplication.processEvents()
-                ui_player.tracker[ui_player.last_draw] += 1
-                ui_player.see(ui_player.last_draw, player=ui_player)
-                if ui_player.can_gan or ui_player.can_win:               
-                    self.set_self_act_button()
+                # for gan or self draw scenario
+                if self.ui_player_check_action():
                     return
+                
                 self.reset_act_button()
                 self.status = Status.to_ditch
                 return
@@ -352,10 +406,11 @@ class UIManipulator(BaseStructure):
 
     def set_button_win(self, ui_player:UIPlayer):
         def action():
+            self._environment_update()
             if self.players.current().index == ui_player.index:
                 self.log("player " + str(ui_player.index) + " 胡啦! (自摸)")            
             ui_player.win()
-            self._environment_update()
+            self.show_action("win", ui_player)
             self.show_tiles(ui_player)
             self.status = Status.start_game
             self.set_regame_button(self.setup_game)
@@ -369,13 +424,16 @@ class UIManipulator(BaseStructure):
                 self.log("player " + str(ui_player.index) + " 胡啦! (自摸)")
             ui_player.holding.remove(ui_player.see_card)
             ui_player.win()
-            self._environment_update()
+            self.show_action("gan", ui_player)
             self.show_tiles(ui_player)
+            self._environment_update()
             self.status = Status.start_game
             self.set_regame_button(self.setup_game)
             return 
         self.button_win.setEnabled(True)
         self.button_win.clicked.connect(action)
+        QtCore.QCoreApplication.processEvents()
+        return 
 
     def set_button_no_act(self, ui_player:UIPlayer, action):        
         if not ui_player.can_win:
@@ -394,6 +452,7 @@ class UIManipulator(BaseStructure):
             self.button_eat.setText("過")
             self.button_eat.setEnabled(True)
             self.button_eat.clicked.connect(action)
+        return
 
     def reset_act_button(self):
         self.button_eat.setText("吃")        

@@ -66,6 +66,7 @@ class UIGameConroller(GameControl, UIManipulator):
             #amend flowers
             for player in self.players:
                 player.amend_flower()
+                self.show_flowers(player)
             
             self.show_tiles(self.ui_player)
             self.player_draw_card()
@@ -90,7 +91,8 @@ class UIGameConroller(GameControl, UIManipulator):
                 return
             
             action = player.action()
-            if action:                
+            if action:
+                self.show_action(action, player)
                 if player.is_win():
                     self.log("player " + str(player.index) + " 胡啦!" +
                               " (player " + str(self.players.current().index) + " 放槍)", player = player)
@@ -98,6 +100,7 @@ class UIGameConroller(GameControl, UIManipulator):
                     self.status = Status.start_game
                     self.set_regame_button(self.setup_game)
                     return
+                self.show_flowers(player)
                 self.user_ditch_card = player.ditch()
                 self.ui_com_discard_card_clear()
                 self.ui_com_discard_card(player, self.user_ditch_card)
@@ -116,8 +119,18 @@ class UIGameConroller(GameControl, UIManipulator):
 
     def _environment_update(self):
         return super()._environment_update()
+    
+    def ui_player_check_action(self)->bool:
+    # for gan or self draw scenario
+        self.ui_player.holding.remove(self.ui_player.last_draw)
+        self.ui_player.see(card=self.ui_player.last_draw, player=self.ui_player)
+        self.ui_player.holding.append(self.ui_player.last_draw)
+        if self.ui_player.can_gan or self.ui_player.can_win:               
+            self.set_self_act_button()
+            return True
 
     def player_draw_card(self):
+        self.reset_action()
         player = self.players.current()
         if self.players.current_id() == self.crrnt_id:
             self.count += 1
@@ -142,11 +155,7 @@ class UIGameConroller(GameControl, UIManipulator):
             self.log("你摸進了 " + translate(card))
 
             # for gan or self draw scenario
-            player.holding.remove(card)
-            player.see(card=card, player=player)
-            player.holding.append(card)
-            if player.can_gan or player.can_win:               
-                self.set_self_act_button()
+            if self.ui_player_check_action():
                 return
 
         else:
