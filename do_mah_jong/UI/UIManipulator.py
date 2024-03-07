@@ -243,6 +243,10 @@ class UIManipulator(BaseStructure):
         self.tile_15.clicked.connect(fn_15)
         self.tile_16.clicked.connect(fn_16)
 
+    def let_others_see(self):
+        self.players.reset(self.ui_player)
+        for other in self.players.others():
+            other.see(card_list=self.ui_player.flower[-3:])
         
 
     def set_button_eat(self, ui_player:UIPlayer):
@@ -253,6 +257,7 @@ class UIManipulator(BaseStructure):
                 if len(eat_combinations) >= 1:
                     def ui_eat_0():                        
                         ui_player.eat(formation=eat_combinations[0])
+                        self.let_others_see()
                         self.status = Status.to_ditch
                         self.show_tiles(ui_player)
                         self.reset_act_button()
@@ -266,6 +271,7 @@ class UIManipulator(BaseStructure):
                 if len(eat_combinations) >= 2:
                     def ui_eat_1():
                         ui_player.eat(formation=eat_combinations[1])
+                        self.let_others_see()
                         self.status = Status.to_ditch
                         self.show_tiles(ui_player)
                         self.reset_act_button()                        
@@ -276,6 +282,7 @@ class UIManipulator(BaseStructure):
                 if len(eat_combinations) >= 3:
                     def ui_eat_2():
                         ui_player.eat(formation=eat_combinations[2])
+                        self.let_others_see()
                         self.status = Status.to_ditch
                         self.show_tiles(ui_player)
                         self.reset_act_button()                        
@@ -291,6 +298,7 @@ class UIManipulator(BaseStructure):
         def ui_pon():
                 self.log("碰")
                 ui_player.pon()
+                self.let_others_see()
                 self.button_pon.setEnabled(False)
                 self.status = Status.to_ditch
                 self.show_tiles(ui_player)
@@ -304,6 +312,7 @@ class UIManipulator(BaseStructure):
         def ui_gan():
                 self.log("槓")
                 ui_player.gan()
+                self.let_others_see()
                 self.log("補進了 " + translate(ui_player.last_draw))
                 self.button_gan.setEnabled(False)
                 # check amended card

@@ -103,6 +103,9 @@ class UIGameConroller(GameControl, UIManipulator):
                 self.ui_com_discard_card(player, self.user_ditch_card)
                 self.log("player " + str(player.index) + " " + action + ", 打: " + translate(self.user_ditch_card))
                 self.players.reset(player)
+                # let other see the output flower
+                for other in self.players.others():
+                    other.see(card_list=player.flower[-3:])
                 return self.check_others_action()
     
         self.to_sea(card)

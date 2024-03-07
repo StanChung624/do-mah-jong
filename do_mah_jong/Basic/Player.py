@@ -237,8 +237,7 @@ class Player():
             return None
     
     @_sort
-    def see(self, card:str, player=None, player_index:int=None)->List[List[str]]:
-
+    def evaluate_action(self, card:str, player=None, player_index:int=None)->List[List[str]]:
         self.__reset_action()
         
         is_upstream_player = True
@@ -246,11 +245,6 @@ class Player():
             player_index = player.index
         if player_index is not None:
             is_upstream_player = (self.index + 3) % 4 == player_index
-
-        self.see_card = card
-        if player_index is not None and player_index != self.index:
-            self.seen_cards[player_index][card] += 1
-        self.tracker[card] -= 1
 
         # return in-take combination
         ret = []
@@ -320,6 +314,26 @@ class Player():
 
         self.eat_combinations = ret
         self.holding.sort()
+        return ret
+
+    def see(self, card:str=None, player=None, player_index:int=None, card_list:List[str]=None)->List[List[str]]:
+
+        # for see other flower cards case
+        if card_list is not None and card is None:
+            for card in [card_list[0], card_list[2]]:
+                self.tracker[card] -= 1
+            return None
+
+        # for see sigle card and react case
+        self.see_card = card
+        # track other's player played card
+        if player_index is not None and player_index != self.index:
+            self.seen_cards[player_index][card] += 1
+        # track cards in deck
+        self.tracker[card] -= 1
+
+        return self.evaluate_action(card, player=player, player_index=player_index)
+        
 
     @_sort
     def listen(self):
