@@ -26,7 +26,7 @@ class UIGameConroller(GameControl, UIManipulator):
         else:
             for log_ in self._log[-10:]:
                 msg += log_
-        self.message.setText(msg)
+        
 
     def output_env(self):
         env = "風: " + translate(self.winds.current()) + " " + str(self.players.current_id()) + "\n"
@@ -37,7 +37,6 @@ class UIGameConroller(GameControl, UIManipulator):
     def setup_game(self):
         self.reset_act_button()
         self._log = list()
-        self.message.setText("")
 
         if self.status == Status.start_game:
             self.deck = Deck()
@@ -96,6 +95,8 @@ class UIGameConroller(GameControl, UIManipulator):
                 if player.is_win():
                     self.log("player " + str(player.index) + " 胡啦!" +
                               " (player " + str(self.players.current().index) + " 放槍)", player = player)
+                    self.show_action("lose", self.players.current())
+                    self.show_tiles(player)
                     self._environment_update()
                     self.status = Status.start_game
                     self.set_regame_button(self.setup_game)
@@ -139,6 +140,7 @@ class UIGameConroller(GameControl, UIManipulator):
 
         if card is None:
             self.log("流局")
+            self.show_action("no_win", player)
             self._environment_update()
             self.status = Status.start_game
             self.set_regame_button(self.setup_game)
@@ -161,6 +163,8 @@ class UIGameConroller(GameControl, UIManipulator):
         else:
             if player.is_win():
                 self.log("player " + str(player.index) + " 胡啦! (自摸)", player = player)
+                self.show_tiles(player)
+                self.show_action("self_win", player)
                 self._environment_update()
                 self.status = Status.start_game
                 self.set_regame_button(self.setup_game)

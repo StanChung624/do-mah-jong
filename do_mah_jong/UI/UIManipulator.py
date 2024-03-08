@@ -141,29 +141,46 @@ class UIManipulator(BaseStructure):
             e_flws[i].setPixmap(get_qpmap(""))
         QtCore.QCoreApplication.processEvents()
 
-    @tiles_on
-    def show_tiles(self, ui_player:UIPlayer):
-        if self.status == Status.to_ditch:
-            self.copilot_msg.setText(
-                "o_o:\n我是會丟 " + translate(ui_player.copilot()) + " 啦"
-            )
+    def __show_tiles(self, player):
+        # UI player use label
+        if player.index == 0:
+            Nholding = len(player.holding)
+            for i in range(17):
+                if i < Nholding:          
+                    card = player.holding[i]
+                    self.tiles[i].setIcon(QtGui.QIcon(get_icon_name(card)))
+                    self.tiles[i].setIconSize(QtCore.QSize(40,40))
+                else:
+                    self.tiles[i].setIcon(QtGui.QIcon())
+                    self.tiles[i].setEnabled(False)
         else:
-            self.copilot_msg.setText(
-                "o_o"
-            )
-
-        Nholding = len(ui_player.holding)
-        Nflower = len(ui_player.flower)
-        for i in range(len(self.tiles)):
-            if i < Nholding:          
-                card = ui_player.holding[i]
-                #self.tiles[i].setText(translate(card))
-                self.tiles[i].setIcon(QtGui.QIcon(get_icon_name(card)))
-                self.tiles[i].setIconSize(QtCore.QSize(40,40))
+            tiles = self.coms_tiles[(player.index-1)*17:(player.index-1)*17+17]
+            Nholding = len(player.holding)
+            rotate = 0
+            if player.index == 1:
+                rotate = 90
+            elif player.index == 3:
+                rotate = 270
+            for i in range(17):
+                if i < Nholding:          
+                    card = player.holding[i]
+                    tiles[i].setPixmap(get_qpmap(card, rotate=rotate))
+                else:
+                    tiles[i].setPixmap(get_qpmap(""))
+        
+    @tiles_on
+    def show_tiles(self, player:Player):
+        if type(player) is UIPlayer:
+            if self.status == Status.to_ditch:
+                self.copilot_msg.setText(
+                    "o_o:\n我是會丟 " + translate(player.copilot()) + " 啦"
+                )
             else:
-                self.tiles[i].setIcon(QtGui.QIcon())
-                self.tiles[i].setEnabled(False)
-        self.show_flowers(ui_player)
+                self.copilot_msg.setText(
+                    "o_o"
+                )
+        self.__show_tiles(player)
+        self.show_flowers(player)
         QtCore.QCoreApplication.processEvents()
 
     def __group_sea_button(self)->List[QtWidgets.QLabel]:
@@ -189,10 +206,17 @@ class UIManipulator(BaseStructure):
         for i in range(112):
             eval("ret.append(self.flw_" + str(i) + ")")
         return ret
+    
+    def __group_com_show_labels(self)->List[QtWidgets.QLabel]:
+        ret = list()
+        for i in range(112, 163):
+            eval("ret.append(self.flw_" + str(i) + ")")
+        return ret
 
     def __set_tiles_button(self)->None:
         self.tiles = self.__group_tiles_button()
         self.flws = self.__group_flws_button()
+        self.coms_tiles = self.__group_com_show_labels()
 
         def ditch_card_action(self):
             self.tiles_off()
@@ -407,9 +431,16 @@ class UIManipulator(BaseStructure):
     def set_button_win(self, ui_player:UIPlayer):
         def action():
             ui_player.win()
+
             if self.players.current().index == ui_player.index:
-                self.log("player " + str(ui_player.index) + " 胡啦! (自摸)")            
-            self.show_action("win", ui_player)
+                self.log("player " + str(ui_player.index) + " 胡啦! (自摸)")
+                self.show_action("self_win", ui_player)
+            else:
+                self.log("player " + str(ui_player.index) + " 胡啦! " +
+                         " (player " + str(self.players.current().index) + " 放槍)", player = ui_player)
+                self.show_action("win", ui_player)
+                self.show_action("lose", self.players.current())
+
             self.show_tiles(ui_player)
             self.status = Status.start_game
             self._environment_update()
@@ -420,11 +451,11 @@ class UIManipulator(BaseStructure):
 
     def set_button_self_win(self, ui_player:UIPlayer):
         def action():
-            if self.players.current().index == ui_player.index:
-                self.log("player " + str(ui_player.index) + " 胡啦! (自摸)")
+            
+            self.log("player " + str(ui_player.index) + " 胡啦! (自摸)")
             ui_player.holding.remove(ui_player.see_card)
             ui_player.win()
-            self.show_action("gan", ui_player)
+            self.show_action("self_win", ui_player)
             self.show_tiles(ui_player)
             self._environment_update()
             self.status = Status.start_game
