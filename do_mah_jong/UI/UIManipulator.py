@@ -167,7 +167,11 @@ class UIManipulator(BaseStructure):
                     tiles[i].setPixmap(get_qpmap(card, rotate=rotate))
                 else:
                     tiles[i].setPixmap(get_qpmap(""))
-        
+    
+    def reset_com_tiles(self):
+        for tile in self.coms_tiles:
+            tile.setPixmap(get_qpmap(""))
+
     @tiles_on
     def show_tiles(self, player:Player):
         if type(player) is UIPlayer:
@@ -450,8 +454,7 @@ class UIManipulator(BaseStructure):
         self.button_win.clicked.connect(action)
 
     def set_button_self_win(self, ui_player:UIPlayer):
-        def action():
-            
+        def action():            
             self.log("player " + str(ui_player.index) + " 胡啦! (自摸)")
             ui_player.holding.remove(ui_player.see_card)
             ui_player.win()
@@ -461,6 +464,7 @@ class UIManipulator(BaseStructure):
             self.status = Status.start_game
             self.set_regame_button(self.setup_game)
             return 
+        self.reset_act_button()
         self.button_win.setEnabled(True)
         self.button_win.clicked.connect(action)
         QtCore.QCoreApplication.processEvents()

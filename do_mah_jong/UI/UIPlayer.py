@@ -14,18 +14,18 @@ class UIPlayer(Player):
                  index: int = 0, 
                  deck: Deck = None, 
                  seen_cards: Dict[int, List[str]] = None,
-                 copilot_type: COMThoughtsBase = None) -> None:
+                 strategy: COMThoughtsBase = None) -> None:
         
         super().__init__(holding, is_owner, index, deck, seen_cards)
         
-        if copilot_type is None:
-            self.copilot_type = Normal
+        if strategy is None:
+            self.strategy = Normal
         else:
-            self.copilot_type = copilot_type
+            self.strategy = strategy
 
     def copilot(self):
         if self.is_win():
             return ""
-        thought = self.copilot_type(self)
+        thought = self.strategy(self)
         return thought.best_ditch()
 

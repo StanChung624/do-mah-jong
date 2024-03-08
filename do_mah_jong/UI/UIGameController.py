@@ -36,6 +36,7 @@ class UIGameConroller(GameControl, UIManipulator):
 
     def setup_game(self):
         self.reset_act_button()
+        self.reset_com_tiles()
         self._log = list()
 
         if self.status == Status.start_game:
@@ -201,7 +202,7 @@ class UIGameConroller(GameControl, UIManipulator):
         if self.ui_player.can_gan:
             self.set_button_self_gan(self.ui_player)
         if self.ui_player.can_win:
-            self.set_button_self_win(self.ui_player)            
+            self.set_button_self_win(self.ui_player)
 
 
     

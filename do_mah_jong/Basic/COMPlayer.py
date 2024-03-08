@@ -28,10 +28,17 @@ class COMPlayer(Player):
             self.win()
             return "win"
         elif self.can_eat:
-            if announce:
-                print("[auto] eat", end=" ")
-            self.eat(formation=self.eat_formation_advisor())
-            return "eat"
+
+            formation=self.eat_formation_advisor()
+            should_eat = self.should_eat_check(formation=formation)
+
+            if should_eat:
+                if announce:
+                    print("[auto] eat", end=" ")
+                self.eat(formation=formation)
+                return "eat"
+            else:
+                return None
         elif self.can_gan:
             if announce:
                 print("[auto] gan", end=" ")
@@ -69,33 +76,15 @@ class COMPlayer(Player):
 
         return best_formation
 
+    def should_eat_check(self, formation=List[str]):
+        holding = list(self.holding)
+        holding.remove(formation[0])
+        holding.remove(formation[2])
+        if self.strategy(self).best_ditch() == self.see_card:
+            return False
+        else:
+            return True
 
-    @Player._sort
-    def analyze_ditch_to_listen(self)->Dict[str,List[Dict[str,int]]]:        
-        ret = dict()
-        efficiency = dict()
-
-        tmp_holding = list(self.holding)            
-        for card in tmp_holding:               
-            self.holding.remove(card)
-            listen_cards = self.listen()
-            if listen_cards is None:
-                self.show()
-                self.see_card
-                
-            if len(listen_cards) > 0:
-                ret_ = list()
-                waits = 0
-                for lis in listen_cards:
-                    ret_.append({lis:self.tracker[lis]})
-                    waits += self.tracker[lis]
-                ret[card] = ret_
-                efficiency[card] = waits
-
-            self.holding.append(card)
-
-        return ret, efficiency
-    
     @Player._sort
     def suggest_ditch(self)->str:
         thoughts = self.strategy(self)
