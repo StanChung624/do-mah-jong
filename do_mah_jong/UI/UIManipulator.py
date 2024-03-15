@@ -48,11 +48,8 @@ class UIManipulator(BaseStructure):
         
     def flush_sea(self):
         for i in range(self.current_sea_index, len(self.sea_cards)):
-            card = self.sea_cards[i]
-            qpixmap = QtGui.QPixmap()
-            qpixmap = qpixmap.fromImage(QtGui.QImage(get_icon_name(card)))
-            qpixmap = qpixmap.scaled(30,40)
-            self.seas[i].setPixmap(qpixmap)
+            card = self.sea_cards[i]            
+            self.seas[i].setPixmap(get_qpmap(card))
         self.current_sea_index = len(self.sea_cards)
         self.ui_com_discard_card_clear()
 

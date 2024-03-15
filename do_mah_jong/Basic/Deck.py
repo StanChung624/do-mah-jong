@@ -1,5 +1,6 @@
 import random
 from typing import List
+
 class Deck():
     m_list = ["m1","m2","m3","m4","m5","m6","m7","m8","m9"]
     o_list = ["o1","o2","o3","o4","o5","o6","o7","o8","o9"]

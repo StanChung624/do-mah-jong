@@ -4,9 +4,13 @@ from do_mah_jong.Basic.Player import Player
 from do_mah_jong.Basic.CheckUtility import *
 
 class COMThoughtsBase():
-    def __init__(self, player:Player)->None:
+    def __init__(self, player:Player, holding:List[str])->None:
         self.index = player.index
-        self.holding = list(player.holding) # current holding
+        if holding:
+            self.holding = holding
+        else:
+            self.holding = list(player.holding) # current holding
+            
         self.tracker = player.tracker # all left cards count tracker
         self.seen_cards = player.seen_cards # other opponents played card        
 
@@ -148,15 +152,20 @@ class COMThoughtsBase():
                     continue
                 break
 
-    
-if __name__ == "__main__":
-    deck = ['l1', 'l2', 'l3', 'm5', 'm5', 'm6', 'm7', 'N', 'm9']
-    player = Player(holding=deck)
+    def base_plus_finished_combo(self, point:int):
+        if len(self.holding) < 3:
+            return
 
-    player.see("m2", player_index=1)
-    
-    thought = COMThoughtsBase(player)
-    
-    thought.base_discarded_series_cards(5)
+        for i_card in range(len(self.holding)-2):
+            card = self.holding[i_card]
+            if is_text(card):
+                if self.count[card] >= 3:
+                    self.grades[card] += point
+            else:
+                neighbors = get_neighbor(card)[-3:]
+                if neighbors[1] in self.holding and neighbors[2] in self.holding:
+                    self.grades[card] += point
+                    self.grades[neighbors[1]] += point
+                    self.grades[neighbors[2]] += point
+                    i_card += 2
 
-    print(thought.grades)

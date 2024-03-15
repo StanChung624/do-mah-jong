@@ -1,7 +1,6 @@
 import os
 import sys
 from argparse import ArgumentParser
-from Logger import LineAPILogger
 from LineTransmitter import line_transmitter
 
 from flask import Flask, request, abort
@@ -24,8 +23,6 @@ from linebot.v3.messaging import (
 )
 
 app = Flask(__name__)
-
-logger = LineAPILogger()
 
 # get channel_secret and channel_access_token from your environment variable
 channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
@@ -56,7 +53,6 @@ def callback():
     # handle webhook body
     try:
         handler.handle(body, signature)
-        logger.log("[callback] called with body:\n"+body, 0)
     except InvalidSignatureError:
         abort(400)
 
@@ -67,9 +63,7 @@ def callback():
 def message_text(event):
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
-        logger.log("[message_text] recieve message:\n"+event.message.text, 1)
         ret = line_transmitter(event.message.text)
-        logger.log("               return message :\n"+ret, 1)
         line_bot_api.reply_message_with_http_info(
             ReplyMessageRequest(
                 reply_token=event.reply_token,

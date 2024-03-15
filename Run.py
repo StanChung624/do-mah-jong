@@ -5,7 +5,7 @@ from do_mah_jong.COMStyle.COMStyle import *
 
 class DoMahJongLauncher():
 
-    def setupUi(self, Dialog):        
+    def setupUi(self, Dialog):
         self.game = UIGameConroller(Dialog)        
         self.game.button_eat.setText("start")
         self.game.button_eat.clicked.connect(self.set_up_game)

@@ -19,14 +19,9 @@ class UIGameConroller(GameControl, UIManipulator):
     
     def log(self, message: str, player: Player = None, end: str = "\n", announce: bool = True):
         super().log(message, player, end, announce)
-        msg = ""
-        if len(self._log) < 10:
-            for log_ in self._log:
-                msg += log_
-        else:
-            for log_ in self._log[-10:]:
-                msg += log_
-        
+        with open("log.txt", "w") as f:
+            for lg in self._log:
+                f.write(lg)
 
     def output_env(self):
         env = "風: " + translate(self.winds.current()) + " " + str(self.players.current_id()) + "\n"
@@ -47,6 +42,7 @@ class UIGameConroller(GameControl, UIManipulator):
                 if type(player) is UIPlayer:
                     self.ui_player = player
 
+            self.log("deck: \n"+str(self.deck.seq), announce=False)
             count = 0
             self.log("game start:", announce=True)
             
@@ -67,6 +63,7 @@ class UIGameConroller(GameControl, UIManipulator):
             for player in self.players:
                 player.amend_flower()
                 self.show_flowers(player)
+                self.log("initial", player, announce=False)
             
             self.show_tiles(self.ui_player)
             self.player_draw_card()
@@ -76,6 +73,44 @@ class UIGameConroller(GameControl, UIManipulator):
         others = self.players.others()
         others.reverse()
 
+        # if someone can win loop
+        for player in others:
+            player.see(card, self.players.current())
+            can_act = player.can_win
+            if not can_act:
+                continue
+            elif self.flag_user_no_act:
+                continue
+            elif type(player) is UIPlayer and can_act:
+                self.status = Status.to_act                
+                self.show_tiles(self.ui_player)
+                self.set_act_button()
+                return
+            
+            action = player.action()
+            if action:
+                self.show_action(action, player)
+                if player.is_win():
+                    self.log("player " + str(player.index) + " 胡啦!" +
+                              " (player " + str(self.players.current().index) + " 放槍)", player = player)
+                    self.show_action("lose", self.players.current())
+                    self.show_tiles(player)
+                    self._environment_update()
+                    self.status = Status.start_game
+                    self.set_regame_button(self.setup_game)
+                    return
+                self.show_flowers(player)
+                self.user_ditch_card = player.ditch()
+                self.ui_com_discard_card_clear()
+                self.ui_com_discard_card(player, self.user_ditch_card)
+                self.log("player " + str(player.index) + " " + action + ", 打: " + translate(self.user_ditch_card))
+                self.players.reset(player)
+                # let other see the output flower
+                for other in self.players.others():
+                    other.see(card_list=player.flower[-3:])
+                return self.check_others_action()
+
+        # if someone can act loop
         for player in others:
             player.see(card, self.players.current())
             can_act = player.can_eat or player.can_gan or\
@@ -112,7 +147,7 @@ class UIGameConroller(GameControl, UIManipulator):
                 for other in self.players.others():
                     other.see(card_list=player.flower[-3:])
                 return self.check_others_action()
-    
+            
         self.to_sea(card)
         self.flush_sea()
         self.players.next()

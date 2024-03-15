@@ -80,7 +80,7 @@ class COMPlayer(Player):
         holding = list(self.holding)
         holding.remove(formation[0])
         holding.remove(formation[2])
-        if self.strategy(self).best_ditch() == self.see_card:
+        if self.strategy(self, holding=holding).best_ditch() == self.see_card:
             return False
         else:
             return True

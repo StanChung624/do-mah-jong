@@ -1,11 +1,13 @@
+from typing import List
 from do_mah_jong.Basic.Player import Player
 from .COMThoughtsBase import COMThoughtsBase
 
 class Normal(COMThoughtsBase):
-    def __init__(self, player: Player) -> None:
+    def __init__(self, player: Player, holding:List[str]=None) -> None:
         self.bias_side = 1
         self.bias_text = 1
-        super().__init__(player)
+        super().__init__(player, holding=holding)
+        self.base_plus_finished_combo(10)
         self.base_neighbor_cards(2)
         self.base_discarded_cards(2)
         self.base_duplicate_cards(3)
@@ -15,10 +17,10 @@ class Normal(COMThoughtsBase):
         self.base_remove_side_straight(5)
 
 class PoPo(COMThoughtsBase):
-    def __init__(self, player: Player) -> None:
+    def __init__(self, player: Player, holding:List[str]=None) -> None:
         self.bias_side = 1
         self.bias_text = 1        
-        super().__init__(player)
+        super().__init__(player, holding=holding)
         self.base_neighbor_cards(1)
         self.base_discarded_cards(1)
         self.base_duplicate_cards(1)
@@ -28,10 +30,10 @@ class PoPo(COMThoughtsBase):
         self.base_remove_side_straight(1)
 
 class NoBrainWin(COMThoughtsBase):
-    def __init__(self, player: Player) -> None:
+    def __init__(self, player: Player, holding:List[str]=None) -> None:
         self.bias_side = 1
         self.bias_text = 1        
-        super().__init__(player)
+        super().__init__(player, holding=holding)
         self.base_neighbor_cards(2)
         self.base_discarded_cards(0)
         self.base_duplicate_cards(2)
@@ -41,10 +43,10 @@ class NoBrainWin(COMThoughtsBase):
         self.base_remove_side_straight(3)
 
 class Coward(COMThoughtsBase):
-    def __init__(self, player: Player) -> None:
+    def __init__(self, player: Player, holding:List[str]=None) -> None:
         self.bias_side = 1
         self.bias_text = 1        
-        super().__init__(player)
+        super().__init__(player, holding=holding)
         self.base_neighbor_cards(1)
         self.base_discarded_cards(3)
         self.base_duplicate_cards(0.5)
