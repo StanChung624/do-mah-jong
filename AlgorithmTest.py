@@ -5,10 +5,10 @@ from multiprocessing import Pool
 
 def run_auto_game():
     game = GameControl()
-    game.register_a_player(player=COMPlayer(is_owner=0, index=2, strategy=Coward))
-    game.register_a_player(player=COMPlayer(is_owner=-1, index=3, strategy=PoPo))
+    game.register_a_player(player=COMPlayer(is_owner=0, index=0, strategy=Coward))
     game.register_a_player(player=COMPlayer(is_owner=-1, index=1))
-    game.register_a_player(player=COMPlayer(is_owner=-1, index=0))
+    game.register_a_player(player=COMPlayer(is_owner=-1, index=2))
+    game.register_a_player(player=COMPlayer(is_owner=-1, index=3))
     game.register_deck(Deck())
 
     count = game.start()

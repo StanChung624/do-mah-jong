@@ -68,12 +68,42 @@ class UIGameConroller(GameControl, UIManipulator):
             self.show_tiles(self.ui_player)
             self.player_draw_card()
 
+    def com_action(self, player:Player, card:str):
+        action = player.action()
+        if action:
+            self.show_action(action, player)
+            if player.is_win():
+                self.log("player " + str(player.index) + " 胡啦!" +
+                            " (player " + str(self.players.current().index) + " 放槍)", player = player)
+                self.show_action("lose", self.players.current())
+                self.show_tiles(player)
+                self._environment_update()
+                self.status = Status.start_game
+                self.set_regame_button(self.setup_game)
+                return
+            self.show_flowers(player)
+            self.user_ditch_card = player.ditch()
+            self.ui_com_discard_card_clear()
+            self.ui_com_discard_card(player, self.user_ditch_card)
+            self.log("player " + str(player.index) + " " + action + ", 打: " + translate(self.user_ditch_card))
+            self.players.reset(player)
+            # let other see the output flower
+            for other in self.players.others():
+                other.see(card_list=player.flower[-3:])
+            return self.check_others_action()
+        else:
+            # if there is not action
+            self.to_sea(card)
+            self.flush_sea()
+            self.players.next()
+            self.player_draw_card()
+
     def check_others_action(self):
         card = self.user_ditch_card
         others = self.players.others()
         others.reverse()
 
-        # if someone can win loop
+        # check someone can win
         for player in others:
             player.see(card, self.players.current())
             can_act = player.can_win
@@ -86,35 +116,12 @@ class UIGameConroller(GameControl, UIManipulator):
                 self.show_tiles(self.ui_player)
                 self.set_act_button()
                 return
-            
-            action = player.action()
-            if action:
-                self.show_action(action, player)
-                if player.is_win():
-                    self.log("player " + str(player.index) + " 胡啦!" +
-                              " (player " + str(self.players.current().index) + " 放槍)", player = player)
-                    self.show_action("lose", self.players.current())
-                    self.show_tiles(player)
-                    self._environment_update()
-                    self.status = Status.start_game
-                    self.set_regame_button(self.setup_game)
-                    return
-                self.show_flowers(player)
-                self.user_ditch_card = player.ditch()
-                self.ui_com_discard_card_clear()
-                self.ui_com_discard_card(player, self.user_ditch_card)
-                self.log("player " + str(player.index) + " " + action + ", 打: " + translate(self.user_ditch_card))
-                self.players.reset(player)
-                # let other see the output flower
-                for other in self.players.others():
-                    other.see(card_list=player.flower[-3:])
-                return self.check_others_action()
-
-        # if someone can act loop
+            else:
+                return self.com_action(player, card)
+        
+        # check someone can pon/gan
         for player in others:
-            player.see(card, self.players.current())
-            can_act = player.can_eat or player.can_gan or\
-                    player.can_pon or player.can_win
+            can_act = player.can_pon or player.can_gan
             if not can_act:
                 continue
             elif self.flag_user_no_act:
@@ -124,30 +131,25 @@ class UIGameConroller(GameControl, UIManipulator):
                 self.show_tiles(self.ui_player)
                 self.set_act_button()
                 return
-            
-            action = player.action()
-            if action:
-                self.show_action(action, player)
-                if player.is_win():
-                    self.log("player " + str(player.index) + " 胡啦!" +
-                              " (player " + str(self.players.current().index) + " 放槍)", player = player)
-                    self.show_action("lose", self.players.current())
-                    self.show_tiles(player)
-                    self._environment_update()
-                    self.status = Status.start_game
-                    self.set_regame_button(self.setup_game)
-                    return
-                self.show_flowers(player)
-                self.user_ditch_card = player.ditch()
-                self.ui_com_discard_card_clear()
-                self.ui_com_discard_card(player, self.user_ditch_card)
-                self.log("player " + str(player.index) + " " + action + ", 打: " + translate(self.user_ditch_card))
-                self.players.reset(player)
-                # let other see the output flower
-                for other in self.players.others():
-                    other.see(card_list=player.flower[-3:])
-                return self.check_others_action()
-            
+            else:
+                return self.com_action(player, card)
+        
+        # check someone can eat
+        for player in others:
+            can_act = player.can_eat
+            if not can_act:
+                continue
+            elif self.flag_user_no_act:
+                continue
+            elif type(player) is UIPlayer and can_act:
+                self.status = Status.to_act                
+                self.show_tiles(self.ui_player)
+                self.set_act_button()
+                return
+            else:
+                return self.com_action(player, card)
+        
+        # if there is not action
         self.to_sea(card)
         self.flush_sea()
         self.players.next()

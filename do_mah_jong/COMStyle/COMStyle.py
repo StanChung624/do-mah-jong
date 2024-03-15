@@ -7,7 +7,7 @@ class Normal(COMThoughtsBase):
         self.bias_side = 1
         self.bias_text = 1
         super().__init__(player, holding=holding)
-        self.base_plus_finished_combo(10)
+        self.base_plus_finished_combo(5)
         self.base_neighbor_cards(2)
         self.base_discarded_cards(2)
         self.base_duplicate_cards(3)
@@ -21,6 +21,7 @@ class PoPo(COMThoughtsBase):
         self.bias_side = 1
         self.bias_text = 1        
         super().__init__(player, holding=holding)
+        self.base_plus_finished_combo(2)
         self.base_neighbor_cards(1)
         self.base_discarded_cards(1)
         self.base_duplicate_cards(1)
@@ -34,6 +35,7 @@ class NoBrainWin(COMThoughtsBase):
         self.bias_side = 1
         self.bias_text = 1        
         super().__init__(player, holding=holding)
+        self.base_plus_finished_combo(5)
         self.base_neighbor_cards(2)
         self.base_discarded_cards(0)
         self.base_duplicate_cards(2)
@@ -47,6 +49,7 @@ class Coward(COMThoughtsBase):
         self.bias_side = 1
         self.bias_text = 1        
         super().__init__(player, holding=holding)
+        self.base_plus_finished_combo(1)
         self.base_neighbor_cards(1)
         self.base_discarded_cards(3)
         self.base_duplicate_cards(0.5)

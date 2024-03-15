@@ -91,35 +91,7 @@ def translate_list(cards:List[str])->List[str]:
 class CustomDeck(Deck):
     def __init__(self):
         super().__init__()        
-        p0 = ["m1", "m1", "m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9", "m9", "m9", "Fa", "Fa", "Fa"]
-        p1 = ["E","W","S","N", "o1", "o3", "o5", "o7", "o9", "l2", "l4", "l6", "l8", "l9", "By", "Ch"]
-        p2 = ["E","W","S","N", "o1", "o3", "o5", "o7", "o9", "l2", "l4", "l6", "l8", "l9", "By", "Ch"]
-        p3 = ["E","W","S","N", "o1", "o3", "o5", "o7", "o9", "l2", "l4", "l6", "l8", "l9", "By", "Ch"]
-        to_draw = ["m1"]
-        # p0 = ["E", "E", "Fa", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9", "m9", "m9", "Fa", "Fa", "Fa"]
-        # p1 = ["m1","W","S","N", "o1", "o3", "o5", "o7", "o9", "l2", "l4", "l6", "l8", "l9", "By", "Ch"]
-        # p2 = ["m1","W","S","N", "o1", "o3", "o5", "o7", "o9", "l2", "l4", "l6", "l8", "l9", "By", "Ch"]
-        # p3 = ["E","W","S","N", "o1", "o3", "o5", "o7", "o9", "l2", "l4", "l6", "l8", "l9", "By", "Ch"]
-        to_draw = ["m1","m2","m3","m4","o8","o8","o8","E"]
-        ps = [p0, p1, p2, p3]
-
-        new_seq = []
-        all_cards = self.seq + self.sea
-        for i in range(4):
-            for p in ps:
-                for j in range(4):
-                    card = p.pop(0)
-                    new_seq.append(card)
-                    all_cards.remove(card)
-        for i in range(128-len(new_seq)):
-            if len(to_draw) > 0:
-                new_seq.append(to_draw.pop(0))
-            else:
-                new_seq.append(all_cards.pop(0))
-        self.seq = new_seq
-        self.sea = all_cards
-
-
+        self.seq = ['o1', 'o6', 'l6', 'm4', 'l4', 'm1', 'm7', 'm6', 'l8', 'X3', 'l3', 'm9', 'm3', 'o6', 'm1', 'o5', 'm8', 'm7', 'l9', 'S', 'l2', 'W', 'l3', 'Ch', 'x1', 'm2', 'o7', 'l5', 'm2', 'm6', 'S', 'o5', 'o3', 'X4', 'Fa', 'o4', 'm5', 'm6', 'E', 'Ch', 'l6', 'o3', 'W', 'l8', 'S', 'm7', 'o1', 'l1', 'm8', 'N', 'By', 'o2', 'm7', 'm9', 'l9', 'o9', 'E', 'o6', 'l7', 'l4', 'Fa', 'l3', 'l5', 'm1', 'o8', 'Fa', 'o2', 'l4', 'l8', 'm3', 'l1', 'E', 'o9', 'o4', 'o2', 'l7', 'm5', 'o7', 'X2', 'm8', 'x3', 'S', 'Fa', 'o8', 'l9', 'By', 'X1', 'l6', 'o4', 'l4', 'o1', 'By', 'Ch', 'm2', 'W', 'm3', 'N', 'm4', 'l8', 'm9', 'l9', 'o5', 'l3', 'm5', 'o3', 'o8', 'l2', 'o2', 'm9', 'N', 'o9', 'm8', 'o8', 'By', 'l5', 'l7', 'l1', 'o4', 'o3', 'l2', 'x2', 'o1', 'x4', 'l6', 'l1', 'Ch', 'm4', 'm2']
 
 if (__name__=="__main__"):
     deck = Deck()
